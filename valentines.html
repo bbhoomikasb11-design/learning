@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Valentine Love Story 💖</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{
+  overflow:hidden;
+  background:linear-gradient(135deg,#ffe6ef,#ffd7e8,#fff2f7);
+  color:#b03060;
+}
+
+/* cinematic zoom effect */
+#main{
+  transition: transform 6s ease, opacity 6s ease;
+}
+.movie-zoom{
+  transform: scale(0.85);
+  opacity:0.4;
+}
+
+/* layout */
+.center{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.card{
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(10px);
+  border-radius:24px;
+  padding:28px;
+  width:100%;
+  max-width:760px;
+  box-shadow:0 15px 40px rgba(0,0,0,.12);
+}
+
+/* buttons */
+button{
+  background:#ff4f87;
+  color:#fff;
+  border:none;
+  padding:12px 20px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:14px;
+  transition:.3s;
+}
+button:hover{transform:scale(1.05)}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ffc6da;
+  margin-top:10px;
+}
+
+.hidden{display:none}
+
+/* floating hearts */
+.float{
+  position:fixed;
+  pointer-events:none;
+  animation:floatUp linear infinite;
+  opacity:.7;
+}
+@keyframes floatUp{
+  from{transform:translateY(100vh)}
+  to{transform:translateY(-120vh)}
+}
+
+/* sparkle mouse */
+.sparkle{
+  position:fixed;
+  pointer-events:none;
+  animation:spark .8s forwards;
+}
+@keyframes spark{
+  to{opacity:0;transform:translateY(-20px) scale(.3)}
+}
+
+/* night ending */
+.night{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#2f3561,#090a19);
+  opacity:0;
+  transition:3s;
+  z-index:-1;
+}
+.night.show{opacity:.95;}
+
+.movie-end{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  color:white;
+  opacity:0;
+  transition:4s;
+  text-align:center;
+  pointer-events:none;
+  z-index:10;
+}
+.movie-end.show{opacity:1;}
+
+.letter{
+  margin-top:15px;
+  background:#fff8fc;
+  border:1px solid #ffd2e4;
+  border-radius:12px;
+  padding:14px;
+  white-space:pre-line;
+  min-height:160px;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgmusic" loop>
+  <source src="romantic.mp3" type="audio/mpeg">
+</audio>
+
+<div id="night" class="night"></div>
+<div id="movieEnd" class="movie-end">✨ The End — Forever With You 💍</div>
+
+<!-- intro -->
+<div id="intro" class="center">
+  <div class="card" style="text-align:center">
+    <h1>💌 A Little Valentine Surprise</h1>
+    <p>Made with love by your girl ✨</p>
+    <button onclick="start()">Open the Surprise ❤️</button>
+  </div>
+</div>
+
+<!-- main -->
+<div id="main" class="center hidden">
+  <div class="card">
+    <h2 style="text-align:center">Our Love Story 💖</h2>
+
+    <div id="qbox">
+      <p id="q"></p>
+      <input id="ans">
+      <button onclick="next()">Next</button>
+    </div>
+
+    <div id="final" class="hidden">
+      <h2 style="text-align:center">Happy Valentine’s Day, my love ❤️</h2>
+      <p style="text-align:center">From your girl to my world ❤️</p>
+
+      <p style="margin-top:10px"><b>Memory:</b> <span id="memory"></span></p>
+      <p><b>Why I love you:</b> <span id="reason"></span></p>
+
+      <div class="letter" id="letter"></div>
+
+      <button onclick="kiss()">💋 Send a Kiss</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const qs=[
+"What's your girlfriend's name?",
+"What cute name do you call her?",
+"Favorite memory together?",
+"What makes you love her the most?",
+"Write a tiny message 💌"
+];
+
+let step=0,answers=[];
+
+function start(){
+  intro.classList.add("hidden");
+  main.classList.remove("hidden");
+  q.innerText=qs[0];
+
+  bgmusic.volume=0.45;
+  bgmusic.play().catch(()=>{});
+  createFloats();
+}
+
+function next(){
+  answers.push(ans.value);
+  ans.value="";
+  step++;
+  if(step<qs.length){
+    q.innerText=qs[step];
+  }else showFinal();
+}
+
+function showFinal(){
+  qbox.classList.add("hidden");
+  final.classList.remove("hidden");
+  memory.textContent=answers[2]||"Every moment feels magical.";
+  reason.textContent=answers[3]||"Because you make life beautiful.";
+  typeLetter();
+}
+
+function typeLetter(){
+const text=`My love,
+
+This little world was made only for you.
+
+Thank you for being my comfort, my laughter, and my heart.
+
+Happy Valentine’s Day ❤️
+
+— Your girl 💕`;
+
+let i=0;
+const t=setInterval(()=>{
+  letter.textContent=text.slice(0,i++);
+  if(i>text.length) clearInterval(t);
+},18);
+}
+
+function kiss(){
+  night.classList.add("show");
+
+  /* cinematic zoom out */
+  setTimeout(()=>{
+    main.classList.add("movie-zoom");
+  },500);
+
+  /* show movie ending text */
+  setTimeout(()=>{
+    movieEnd.classList.add("show");
+  },2500);
+}
+
+/* floating hearts */
+function createFloats(){
+  const icons=["💖","✨","🌸","🧸"];
+  for(let i=0;i<24;i++){
+    let d=document.createElement("div");
+    d.className="float";
+    d.innerText=icons[Math.floor(Math.random()*icons.length)];
+    d.style.left=Math.random()*100+"vw";
+    d.style.animationDuration=(6+Math.random()*6)+"s";
+    d.style.fontSize=(16+Math.random()*20)+"px";
+    document.body.appendChild(d);
+  }
+}
+
+/* sparkle trail */
+document.addEventListener("mousemove",e=>{
+  let s=document.createElement("div");
+  s.className="sparkle";
+  s.textContent="✨";
+  s.style.left=e.clientX+"px";
+  s.style.top=e.clientY+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),800);
+});
+</script>
+
+</body>
+</html>

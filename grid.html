@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            gridbox
+        </title>
+        <style>
+   .grid {
+  display: grid;
+  grid-template-columns: repeat(3, 2fr);
+  gap: 20px;
+}
+
+
+.item {
+  background: tomato;
+  padding: 20px;
+  border: 10px solid rgb(4, 3, 3);
+}
+.item:first-child {
+  grid-column: span 2;
+}
+
+  
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+  <div class="item">1</div>
+  <div class="item">2</div>
+  <div class="item">3</div>
+</div>
+
+    </body>
+</html>

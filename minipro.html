@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Project Feature Section</title>
+  <style>
+    body {
+      background-color: #f1ea9c;
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 40px;
+    }
+
+    /* Section */
+    .section {
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .section h2 {
+      margin-bottom: 10px;
+    }
+
+    .section p {
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* Card */
+    .card {
+      background-color: aliceblue;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 120px;
+      border-radius: 8px;
+    }
+
+    .card button {
+      background-color: rgb(30, 205, 44);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card button:hover {
+      background-color: rgb(36, 77, 42);
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="section">
+    <h2>Nature Essentials</h2>
+    <p>Simple features that support life on Earth</p>
+
+    <div class="grid">
+      <div class="card">
+        <img src="plant.avif" alt="Plants">
+        <h3>Plants</h3>
+        <p>Plants give us oxygen and support life.</p>
+        <button>Learn more</button>
+      </div>
+
+      <div class="card">
+        <img src="water.jpeg" alt="Water">
+        <h3>Water</h3>
+        <p>Water is essential for every living being.</p>
+        <button>Learn more</button>
+      </div>
+
+      <div class="card">
+        <img src="soil.jpeg" alt="Soil">
+        <h3>Soil</h3>
+        <p>Soil helps plants grow and sustain ecosystems.</p>
+        <button>Learn more</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

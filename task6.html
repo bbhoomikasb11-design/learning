@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Task6</title>
+        <style>
+
+            .grid{
+                display:grid;
+                background-color: blanchedalmond;
+                gap: 10px;
+                max-width: 1000px;
+  margin: 40px auto;
+
+            }
+            .grid{
+                                grid-template-columns: repeat(3,1fr);
+
+            }
+            .item{
+                background-color: pink;
+                padding:10px;
+                border:5px solid black;
+                align-items: center;
+            }
+            body{
+                background-color: beige;
+                font-family: 'Times New Roman', Times, serif;
+            }
+            .item:first-child{
+                grid-column: span 2;
+            }
+.btn{
+    width:auto;
+    height: auto;
+    background-color:lightcyan;
+    color: black;
+    transition: 0.3s;
+}
+.btn:hover{
+    background-color: rgb(43, 119, 124);
+    transform: translateY(-10px);
+}
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+    h3 {
+    font-size: 18px;
+  }
+
+
+  .item:first-child {
+    grid-column: span 1;
+  }
+}
+
+            
+        </style>
+    </head>
+    <body>
+        <div class="grid">
+            <div class="item">
+                <h3>PLANTS</h3>
+                <p>Plants are essential multicellular, eukaryotic organisms in the kingdom Plantae that produce their own food through photosynthesis</p>
+                <button type="submit" class="btn">Learn Moree..</button>
+                </div>
+                <div class="item">
+                    <h3>WATER</h3>
+                    <p>Covering over 70% of Earth's surface, it is essential for all known life forms and acts as a universal solvent. Water exists naturally in solid (ice), liquid, and gaseous (vapor) states. </p>
+                                    <button type="submit" class="btn">Learn Moree..</button>
+</div>
+                <div class="item">
+                                        <h3>WATER</h3>
+
+                    <p>Water is an inorganic compound with the chemical formula H₂O</p>
+                                                        <button type="submit" class="btn">Learn Moree..</button>
+
+</div>
+                                                        <div class="item">
+                        <h3>WATER</h3>
+
+    <p>Water is the liquid that makes life on Earth possible.</p>
+<button type="submit" class="btn">Learn Moree..</button>
+</div>
+<div class="item">
+                        <h3>WATER</h3>
+
+    <p>Water is the essential building block of life</p>
+    <button type="submit" class="btn">Learn Moree..</button>
+</div>
+    <div class="item">
+                        <h3>WATER</h3>
+
+    <p> Safe and readily available water</p>
+        <button type="submit" class="btn">Learn Moree..</button>
+
+</div>
+
+        </div>
+    </body>
+</html>
