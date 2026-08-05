@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Portfolio</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+}
+
+/* Navbar */
+
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 8%;
+    background:#111827;
+    position:sticky;
+    top:0;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#38bdf8;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:30px;
+}
+
+nav ul li a{
+    color:white;
+    text-decoration:none;
+    transition:.3s;
+}
+
+nav ul li a:hover{
+    color:#38bdf8;
+}
+
+/* Hero */
+
+.hero{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+}
+
+.hero h1{
+    font-size:60px;
+}
+
+.hero span{
+    color:#38bdf8;
+}
+
+.hero p{
+    margin:20px 0;
+    font-size:20px;
+    color:#cbd5e1;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:14px 35px;
+    background:#38bdf8;
+    color:white;
+    text-decoration:none;
+    border-radius:30px;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-5px);
+}
+
+/* Common */
+
+section{
+    padding:80px 8%;
+}
+
+h2{
+    text-align:center;
+    font-size:38px;
+    margin-bottom:40px;
+}
+
+/* About */
+
+.about p{
+    max-width:700px;
+    margin:auto;
+    text-align:center;
+    line-height:1.8;
+    color:#d1d5db;
+}
+
+/* Skills */
+
+.skills-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+}
+
+.skill{
+    background:#1e293b;
+    padding:30px;
+    text-align:center;
+    border-radius:15px;
+    transition:.3s;
+}
+
+.skill:hover{
+    background:#38bdf8;
+    transform:translateY(-8px);
+}
+
+/* Projects */
+
+.projects-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.project{
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+    transition:.3s;
+}
+
+.project:hover{
+    transform:scale(1.04);
+}
+
+.project h3{
+    margin-bottom:15px;
+}
+
+/* Experience */
+
+.timeline{
+    display:grid;
+    gap:20px;
+}
+
+.exp{
+    background:#1e293b;
+    padding:20px;
+    border-left:5px solid #38bdf8;
+    border-radius:10px;
+}
+
+/* Contact */
+
+form{
+    max-width:600px;
+    margin:auto;
+    display:flex;
+    flex-direction:column;
+}
+
+input,textarea{
+    margin:10px 0;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+}
+
+textarea{
+    resize:none;
+    height:150px;
+}
+
+button{
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:#38bdf8;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#0ea5e9;
+}
+
+/* Footer */
+
+footer{
+    text-align:center;
+    padding:25px;
+    background:#111827;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+nav{
+    flex-direction:column;
+}
+
+nav ul{
+    margin-top:15px;
+    flex-direction:column;
+}
+
+nav ul li{
+    margin:10px 0;
+}
+
+.hero h1{
+    font-size:40px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">Bhoomika</div>
+
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#about">About</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="#projects">Projects</a></li>
+<li><a href="#experience">Experience</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+
+</nav>
+
+<section class="hero" id="home">
+
+<div>
+
+<h1>Hello, I'm <span>Bhoomika</span></h1>
+
+<p>Frontend Developer | UI Designer | Creative Learner</p>
+
+<a href="#" class="btn">View My Work</a>
+
+</div>
+
+</section>
+
+<section id="about" class="about">
+
+<h2>About Me</h2>
+
+<p>
+I'm passionate about designing modern and responsive websites.
+I enjoy creating clean user interfaces using HTML and CSS while continuously learning JavaScript and React.
+</p>
+
+</section>
+
+<section id="skills">
+
+<h2>Skills</h2>
+
+<div class="skills-container">
+
+<div class="skill">HTML5</div>
+
+<div class="skill">CSS3</div>
+
+<div class="skill">JavaScript</div>
+
+<div class="skill">React</div>
+
+<div class="skill">Figma</div>
+
+<div class="skill">Git & GitHub</div>
+
+</div>
+
+</section>
+
+<section id="projects">
+
+<h2>Projects</h2>
+
+<div class="projects-container">
+
+<div class="project">
+<h3>Portfolio Website</h3>
+<p>Modern responsive personal portfolio.</p>
+</div>
+
+<div class="project">
+<h3>Netflix Clone</h3>
+<p>Landing page built using HTML & CSS.</p>
+</div>
+
+<div class="project">
+<h3>University Dashboard</h3>
+<p>Clean dashboard UI design.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="experience">
+
+<h2>Experience</h2>
+
+<div class="timeline">
+
+<div class="exp">
+<h3>Frontend Learner</h3>
+<p>Building responsive websites and improving UI design skills.</p>
+</div>
+
+<div class="exp">
+<h3>UI/UX Designer</h3>
+<p>Creating clean interfaces in Figma with modern layouts.</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="contact">
+
+<h2>Contact Me</h2>
+
+<form>
+
+<input type="text" placeholder="Your Name">
+
+<input type="email" placeholder="Email Address">
+
+<textarea placeholder="Your Message"></textarea>
+
+<button>Send Message</button>
+
+</form>
+
+</section>
+
+<footer>
+
+<p>© 2026 Bhoomika | All Rights Reserved</p>
+
+</footer>
+
+</body>
+</html>
