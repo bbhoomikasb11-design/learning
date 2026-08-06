@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netflix Clone</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#000;
+    color:white;
+}
+
+/* Navbar */
+
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 8%;
+    background:black;
+}
+
+.logo{
+    color:red;
+    font-size:35px;
+    font-weight:bold;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:25px;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+}
+
+nav a:hover{
+    color:red;
+}
+
+/* Hero */
+
+.hero{
+    height:90vh;
+    background:linear-gradient(rgba(0,0,0,.8),rgba(0,0,0,.8)),
+               linear-gradient(135deg,#4b0000,#111);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:20px;
+}
+
+.hero h1{
+    font-size:55px;
+}
+
+.hero p{
+    margin:20px 0;
+    font-size:20px;
+    color:#ddd;
+}
+
+.hero input{
+    padding:15px;
+    width:280px;
+    border:none;
+    border-radius:5px;
+}
+
+.hero button{
+    padding:15px 25px;
+    border:none;
+    background:red;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+/* Sections */
+
+section{
+    padding:60px 8%;
+}
+
+h2{
+    margin-bottom:25px;
+}
+
+/* Movie Cards */
+
+.movies{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#222;
+    border-radius:10px;
+    padding:20px;
+    text-align:center;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:scale(1.05);
+    background:#333;
+}
+
+.poster{
+    height:220px;
+    background:#444;
+    border-radius:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:50px;
+    margin-bottom:15px;
+}
+
+/* Features */
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.feature{
+    background:#181818;
+    padding:20px;
+    border-radius:10px;
+}
+
+/* FAQ */
+
+.faq div{
+    background:#222;
+    padding:18px;
+    margin:12px 0;
+    border-radius:5px;
+}
+
+/* Footer */
+
+footer{
+    background:#111;
+    text-align:center;
+    padding:30px;
+    color:#aaa;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+nav{
+    flex-direction:column;
+}
+
+nav ul{
+    margin-top:15px;
+}
+
+.hero h1{
+    font-size:35px;
+}
+
+.hero input{
+    width:100%;
+    margin-bottom:10px;
+}
+
+.hero button{
+    width:100%;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<!-- Navbar -->
+
+<nav>
+
+<div class="logo">NETFLIX</div>
+
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#">TV Shows</a></li>
+<li><a href="#">Movies</a></li>
+<li><a href="#">My List</a></li>
+</ul>
+
+</nav>
+
+<!-- Hero -->
+
+<div class="hero">
+
+<div>
+
+<h1>Unlimited Movies,<br>TV Shows & More</h1>
+
+<p>Watch anywhere. Cancel anytime.</p>
+
+<input type="email" placeholder="Email Address">
+
+<button>Get Started</button>
+
+</div>
+
+</div>
+
+<!-- Trending -->
+
+<section>
+
+<h2>Trending Now</h2>
+
+<div class="movies">
+
+<div class="card">
+<div class="poster">🎬</div>
+<h3>Movie One</h3>
+</div>
+
+<div class="card">
+<div class="poster">🍿</div>
+<h3>Movie Two</h3>
+</div>
+
+<div class="card">
+<div class="poster">🎥</div>
+<h3>Movie Three</h3>
+</div>
+
+<div class="card">
+<div class="poster">🔥</div>
+<h3>Movie Four</h3>
+</div>
+
+</div>
+
+</section>
+
+<!-- Reasons -->
+
+<section>
+
+<h2>More Reasons to Join</h2>
+
+<div class="features">
+
+<div class="feature">
+<h3>📺 Watch on TV</h3>
+<p>Enjoy on Smart TVs, PlayStation, Xbox and more.</p>
+</div>
+
+<div class="feature">
+<h3>📱 Download Shows</h3>
+<p>Save your favourites to watch offline.</p>
+</div>
+
+<div class="feature">
+<h3>🌍 Watch Everywhere</h3>
+<p>Stream on all your devices anytime.</p>
+</div>
+
+<div class="feature">
+<h3>👨‍👩‍👧 Kids Profiles</h3>
+<p>Create profiles specially made for kids.</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- FAQ -->
+
+<section>
+
+<h2>Frequently Asked Questions</h2>
+
+<div class="faq">
+
+<div>What is Netflix?</div>
+
+<div>How much does Netflix cost?</div>
+
+<div>Where can I watch?</div>
+
+<div>How do I cancel?</div>
+
+<div>What can I watch?</div>
+
+</div>
+
+</section>
+
+<!-- Footer -->
+
+<footer>
+
+<h2>NETFLIX</h2>
+
+<p>Watch unlimited movies and TV shows.</p>
+
+<br>
+
+<p>© 2026 Netflix Clone | Created using HTML & CSS</p>
+
+</footer>
+
+</body>
+</html>
