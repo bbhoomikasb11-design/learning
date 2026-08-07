@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Instagram Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#fafafa;
+display:flex;
+justify-content:center;
+padding:40px;
+}
+
+.profile{
+width:700px;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.header{
+display:flex;
+align-items:center;
+gap:30px;
+margin-bottom:30px;
+}
+
+.pic{
+width:120px;
+height:120px;
+border-radius:50%;
+background:linear-gradient(45deg,#ff0066,#ffcc00);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:50px;
+color:white;
+}
+
+.info h2{
+margin-bottom:10px;
+}
+
+.stats{
+display:flex;
+gap:25px;
+margin:15px 0;
+}
+
+button{
+padding:10px 20px;
+border:none;
+background:#0095f6;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.posts{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.post{
+height:170px;
+background:linear-gradient(135deg,#8ec5fc,#e0c3fc);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:45px;
+border-radius:10px;
+transition:.3s;
+}
+
+.post:hover{
+transform:scale(1.05);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="profile">
+
+<div class="header">
+
+<div class="pic">👩</div>
+
+<div class="info">
+
+<h2>bhoomika.dev</h2>
+
+<div class="stats">
+<p><b>24</b> Posts</p>
+<p><b>2.1k</b> Followers</p>
+<p><b>450</b> Following</p>
+</div>
+
+<p>💻 Frontend Developer</p>
+<p>🎨 UI Designer</p>
+
+<br>
+
+<button>Follow</button>
+
+</div>
+
+</div>
+
+<div class="posts">
+
+<div class="post">📷</div>
+
+<div class="post">🌸</div>
+
+<div class="post">💻</div>
+
+<div class="post">🎧</div>
+
+<div class="post">☕</div>
+
+<div class="post">🌍</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
