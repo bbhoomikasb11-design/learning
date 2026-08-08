@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopping Cart</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        .card {
+            width: 350px;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px #ccc;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .quantity {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .quantity button {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #quantity {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #addCart {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: black;
+            color: white;
+            cursor: pointer;
+        }
+
+        #addCart:hover {
+            background: #333;
+        }
+
+        #message {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h1>Wireless Headphones</h1>
+
+        <p class="price">₹1999</p>
+
+        <div class="quantity">
+
+            <button id="minus">−</button>
+
+            <span id="quantity">1</span>
+
+            <button id="plus">+</button>
+
+        </div>
+
+        <button id="addCart">
+            Add to Cart
+        </button>
+
+        <p>
+            Cart Items:
+            <strong id="cartCount">0</strong>
+        </p>
+
+        <p>
+            Total:
+            ₹<strong id="total">0</strong>
+        </p>
+
+        <p id="message"></p>
+
+    </div>
+
+
+    <script>
+
+        // Product price
+        const price = 1999;
+
+        // Find HTML elements
+        const plusButton = document.getElementById("plus");
+        const minusButton = document.getElementById("minus");
+        const quantityText = document.getElementById("quantity");
+        const addCartButton = document.getElementById("addCart");
+        const cartCount = document.getElementById("cartCount");
+        const totalText = document.getElementById("total");
+        const message = document.getElementById("message");
+
+        // Data that can change
+        let quantity = 1;
+        let cartItems = 0;
+
+        // Increase quantity
+        plusButton.addEventListener("click", function () {
+
+            quantity++;
+
+            quantityText.textContent = quantity;
+
+            totalText.textContent = price * quantity;
+
+        });
+
+
+        // Decrease quantity
+        minusButton.addEventListener("click", function () {
+
+            if (quantity > 1) {
+
+                quantity--;
+
+                quantityText.textContent = quantity;
+
+                totalText.textContent = price * quantity;
+            }
+
+        });
+
+
+        // Add product to cart
+        addCartButton.addEventListener("click", function () {
+
+            cartItems += quantity;
+
+            cartCount.textContent = cartItems;
+
+            message.textContent = "Added to cart!";
+
+        });
+
+    </script>
+
+</body>
+</html>
