@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login Form</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+        }
+
+        .login-box {
+            width: 360px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px #ccc;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: black;
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box button {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        #loginBtn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: black;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #loginBtn:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="login-box">
+
+        <h1>Login</h1>
+
+        <form id="loginForm">
+
+            <!-- Email -->
+
+            <div class="field">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                >
+
+                <p id="emailError" class="error"></p>
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-box">
+
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                    >
+
+                    <button
+                        type="button"
+                        id="showPassword">
+                        Show
+                    </button>
+
+                </div>
+
+                <p id="passwordError" class="error"></p>
+
+            </div>
+
+
+            <button
+                type="submit"
+                id="loginBtn">
+
+                Login
+
+            </button>
+
+            <p id="message"></p>
+
+        </form>
+
+    </div>
+
+
+    <script>
+
+        // -----------------------------
+        // GET HTML ELEMENTS
+        // -----------------------------
+
+        const form = document.getElementById("loginForm");
+
+        const email = document.getElementById("email");
+
+        const password = document.getElementById("password");
+
+        const emailError = document.getElementById("emailError");
+
+        const passwordError = document.getElementById("passwordError");
+
+        const message = document.getElementById("message");
+
+        const loginBtn = document.getElementById("loginBtn");
+
+        const showPassword =
+            document.getElementById("showPassword");
+
+
+        // -----------------------------
+        // SHOW / HIDE PASSWORD
+        // -----------------------------
+
+        showPassword.addEventListener("click", function () {
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                showPassword.textContent = "Hide";
+
+            } else {
+
+                password.type = "password";
+
+                showPassword.textContent = "Show";
+
+            }
+
+        });
+
+
+        // -----------------------------
+        // FORM SUBMISSION
+        // -----------------------------
+
+        form.addEventListener("submit", function (event) {
+
+            // Prevent page refresh
+            event.preventDefault();
+
+
+            // Clear old messages
+            emailError.textContent = "";
+
+            passwordError.textContent = "";
+
+            message.textContent = "";
+
+
+            // Get user input
+            const emailValue = email.value.trim();
+
+            const passwordValue = password.value;
+
+
+            let isValid = true;
+
+
+            // -----------------------------
+            // EMAIL VALIDATION
+            // -----------------------------
+
+            if (emailValue === "") {
+
+                emailError.textContent =
+                    "Email is required.";
+
+                isValid = false;
+
+            } else if (!emailValue.includes("@")) {
+
+                emailError.textContent =
+                    "Enter a valid email.";
+
+                isValid = false;
+
+            }
+
+
+            // -----------------------------
+            // PASSWORD VALIDATION
+            // -----------------------------
+
+            if (passwordValue === "") {
+
+                passwordError.textContent =
+                    "Password is required.";
+
+                isValid = false;
+
+            } else if (passwordValue.length < 6) {
+
+                passwordError.textContent =
+                    "Password must contain at least 6 characters.";
+
+                isValid = false;
+
+            }
+
+
+            // -----------------------------
+            // STOP IF INVALID
+            // -----------------------------
+
+            if (!isValid) {
+
+                return;
+
+            }
+
+
+            // -----------------------------
+            // LOGIN SUCCESS
+            // -----------------------------
+
+            loginBtn.disabled = true;
+
+            loginBtn.textContent = "Logging in...";
+
+
+            // Simulate server request
+            setTimeout(function () {
+
+                message.textContent =
+                    "Login successful! 🎉";
+
+                message.style.color = "green";
+
+                loginBtn.disabled = false;
+
+                loginBtn.textContent = "Login";
+
+            }, 1500);
+
+        });
+
+    </script>
+
+</body>
+
+</html>
