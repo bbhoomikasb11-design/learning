@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NOVA — Developer Profile</title>
+
+    <style>
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================
+           BODY
+        ========================= */
+
+        body {
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #29204f,
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    #102c42,
+                    transparent 35%
+                ),
+                #08090d;
+
+            color: white;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================
+           BACKGROUND ORBS
+        ========================= */
+
+        .orb {
+            position: fixed;
+
+            width: 350px;
+            height: 350px;
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            opacity: 0.35;
+
+            pointer-events: none;
+        }
+
+        .orb-one {
+            background: #8b5cf6;
+
+            top: -120px;
+            left: -100px;
+        }
+
+        .orb-two {
+            background: #06b6d4;
+
+            right: -120px;
+            bottom: -100px;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+
+        /* =========================
+           PROFILE CARD
+        ========================= */
+
+        .profile-card {
+            width: 100%;
+            max-width: 520px;
+
+            padding: 30px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.09),
+                    rgba(255, 255, 255, 0.035)
+                );
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            backdrop-filter: blur(25px);
+
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.45);
+
+            transition: transform 0.4s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-6px);
+        }
+
+
+        /* =========================
+           TOP SECTION
+        ========================= */
+
+        .top-section {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 35px;
+        }
+
+        .status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 12px;
+
+            color: #b8becb;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            background: #36e28d;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 12px #36e28d;
+        }
+
+        .menu-btn {
+            border: none;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            color: white;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-size: 17px;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+
+        /* =========================
+           PROFILE
+        ========================= */
+
+        .profile {
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+        }
+
+        .avatar {
+            width: 78px;
+            height: 78px;
+
+            border-radius: 22px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #06b6d4
+                );
+
+            box-shadow:
+                0 10px 35px rgba(139, 92, 246, 0.3);
+
+            font-size: 30px;
+
+            font-weight: 700;
+
+            flex-shrink: 0;
+        }
+
+        .small-label {
+            font-size: 10px;
+
+            letter-spacing: 2px;
+
+            color: #777f91;
+
+            margin-bottom: 5px;
+        }
+
+        .profile-info h1 {
+            font-size: 34px;
+
+            line-height: 1;
+
+            letter-spacing: -1px;
+        }
+
+        .role {
+            margin-top: 8px;
+
+            font-size: 14px;
+
+            color: #9ba3b4;
+        }
+
+
+        /* =========================
+           BIO
+        ========================= */
+
+        .bio {
+            color: #9ba3b4;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            max-width: 440px;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* =========================
+           SECTION HEADER
+        ========================= */
+
+        .section-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            color: #71798b;
+
+            font-size: 10px;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 12px;
+        }
+
+
+        /* =========================
+           SKILLS
+        ========================= */
+
+        .skills {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 30px;
+        }
+
+        .skill {
+            padding: 9px 13px;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.055);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            color: #d7dbe5;
+
+            font-size: 12px;
+
+            transition: 0.3s;
+        }
+
+        .skill:hover {
+            background: rgba(139, 92, 246, 0.16);
+
+            border-color: rgba(139, 92, 246, 0.35);
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            border-top:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            padding: 22px 0;
+
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            text-align: center;
+
+            border-right:
+                1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat h3 {
+            font-size: 20px;
+
+            margin-bottom: 5px;
+        }
+
+        .stat p {
+            color: #71798b;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .actions {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .actions button {
+            height: 48px;
+
+            border-radius: 14px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .primary-btn {
+            flex: 1;
+
+            border: none;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6366f1
+                );
+
+            box-shadow:
+                0 10px 25px rgba(99, 102, 241, 0.25);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 15px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .secondary-btn {
+            width: 110px;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.1);
+
+            color: #d7dbe5;
+
+            background:
+                rgba(255, 255, 255, 0.05);
+        }
+
+        .secondary-btn:hover {
+            background:
+                rgba(255, 255, 255, 0.1);
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .card-footer {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 22px;
+
+            color: #5f6676;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 500px) {
+
+            .profile-card {
+                padding: 23px;
+
+                border-radius: 23px;
+            }
+
+            .profile-info h1 {
+                font-size: 27px;
+            }
+
+            .avatar {
+                width: 65px;
+                height: 65px;
+
+                border-radius: 18px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .secondary-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- Background -->
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+
+
+    <main class="page">
+
+        <section class="profile-card">
+
+            <!-- Status -->
+            <div class="top-section">
+
+                <div class="status">
+                    <span class="status-dot"></span>
+                    Available for opportunities
+                </div>
+
+                <button class="menu-btn">
+                    •••
+                </button>
+
+            </div>
+
+
+            <!-- Profile -->
+            <div class="profile">
+
+                <div class="avatar">
+                    <span id="avatarLetter">B</span>
+                </div>
+
+                <div class="profile-info">
+
+                    <p class="small-label">
+                        HELLO, I'M
+                    </p>
+
+                    <h1 id="name">
+                        Bhoomika
+                    </h1>
+
+                    <p id="role" class="role">
+                        AI & Data Science Student
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Bio -->
+            <p id="bio" class="bio">
+                Building thoughtful digital experiences with
+                code, creativity and a curiosity for solving
+                real-world problems.
+            </p>
+
+
+            <!-- Skills -->
+            <div class="section-header">
+
+                <span>TECH STACK</span>
+
+                <span>04</span>
+
+            </div>
+
+            <div id="skills" class="skills"></div>
+
+
+            <!-- Stats -->
+            <div class="stats">
+
+                <div class="stat">
+                    <h3>12+</h3>
+                    <p>Projects</p>
+                </div>
+
+                <div class="stat">
+                    <h3>08</h3>
+                    <p>Skills</p>
+                </div>
+
+                <div class="stat">
+                    <h3>∞</h3>
+                    <p>Ideas</p>
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="actions">
+
+                <button id="profileBtn" class="primary-btn">
+                    View Profile ↗
+                </button>
+
+                <button
+                    id="githubBtn"
+                    class="secondary-btn"
+                >
+                    GitHub
+                </button>
+
+            </div>
+
+
+            <!-- Footer -->
+            <div class="card-footer">
+
+                <span>
+                    Based in India 🇮🇳
+                </span>
+
+                <span>
+                    2026
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        // =========================
+        // USER OBJECT
+        // =========================
+
+        const user = {
+
+            name: "Bhoomika",
+
+            role: "AI & Data Science Student",
+
+            bio:
+                "Building thoughtful digital experiences with code, creativity and a curiosity for solving real-world problems.",
+
+            skills: [
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "Figma"
+            ]
+
+        };
+
+
+        // =========================
+        // SELECT HTML ELEMENTS
+        // =========================
+
+        const nameElement =
+            document.querySelector("#name");
+
+        const roleElement =
+            document.querySelector("#role");
+
+        const bioElement =
+            document.querySelector("#bio");
+
+        const skillsContainer =
+            document.querySelector("#skills");
+
+        const profileButton =
+            document.querySelector("#profileBtn");
+
+        const githubButton =
+            document.querySelector("#githubBtn");
+
+
+        // =========================
+        // DISPLAY USER DATA
+        // =========================
+
+        nameElement.textContent =
+            user.name;
+
+        roleElement.textContent =
+            user.role;
+
+        bioElement.textContent =
+            user.bio;
+
+
+        // =========================
+        // GENERATE SKILLS
+        // USING map()
+        // =========================
+
+        const skillHTML =
+            user.skills.map(skill => {
+
+                return `
+                    <span class="skill">
+                        ${skill}
+                    </span>
+                `;
+
+            });
+
+
+        // Convert array into HTML
+        skillsContainer.innerHTML =
+            skillHTML.join("");
+
+
+        // =========================
+        // PROFILE BUTTON
+        // =========================
+
+        profileButton.addEventListener(
+            "click",
+            () => {
+
+                alert(
+                    `Hi! I'm ${user.name}. Thanks for visiting my profile!`
+                );
+
+            }
+        );
+
+
+        // =========================
+        // GITHUB BUTTON
+        // =========================
+
+        githubButton.addEventListener(
+            "click",
+            () => {
+
+                alert(
+                    "GitHub profile will open here!"
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
