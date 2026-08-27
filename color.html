@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Color Lab</title>
+
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================
+           BODY
+        ========================= */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #35245c,
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at bottom right,
+                    #123d4c,
+                    transparent 35%
+                ),
+
+                #08090d;
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 30px;
+
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 950px;
+
+            text-align: center;
+
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 8px 14px;
+
+            border-radius: 50px;
+
+            background:
+                rgba(255,255,255,0.07);
+
+            border:
+                1px solid rgba(255,255,255,0.1);
+
+            color: #aaa9ff;
+
+            font-size: 11px;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        h1 {
+
+            font-size: 56px;
+
+            letter-spacing: -3px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .subtitle {
+
+            color: #8d93a5;
+
+            font-size: 15px;
+
+            margin-bottom: 45px;
+
+        }
+
+
+        /* =========================
+           PALETTE
+        ========================= */
+
+        .palette {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        /* =========================
+           COLOR CARD
+        ========================= */
+
+        .color-card {
+
+            min-height: 300px;
+
+            border-radius: 25px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            cursor: pointer;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: flex-end;
+
+            padding: 22px;
+
+            text-align: left;
+
+            transition:
+                transform 0.35s ease,
+                box-shadow 0.35s ease;
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.25);
+
+        }
+
+
+        .color-card:hover {
+
+            transform:
+                translateY(-8px)
+                scale(1.02);
+
+            box-shadow:
+                0 30px 70px rgba(0,0,0,0.4);
+
+        }
+
+
+        /* =========================
+           COLOR INFO
+        ========================= */
+
+        .color-info {
+
+            background:
+                rgba(0,0,0,0.35);
+
+            backdrop-filter:
+                blur(12px);
+
+            border:
+                1px solid rgba(255,255,255,0.15);
+
+            padding: 14px 16px;
+
+            border-radius: 16px;
+
+        }
+
+
+        .color-name {
+
+            font-size: 12px;
+
+            color: rgba(255,255,255,0.7);
+
+            margin-bottom: 4px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .hex {
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .generate-btn {
+
+            border: none;
+
+            padding: 15px 30px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6366f1
+                );
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 15px 30px
+                rgba(99,102,241,0.3);
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+
+        }
+
+
+        .generate-btn:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 20px 40px
+                rgba(99,102,241,0.45);
+
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+
+            height: 20px;
+
+            margin-top: 15px;
+
+            color: #7ee2a8;
+
+            font-size: 12px;
+
+            opacity: 0;
+
+            transition: opacity 0.3s ease;
+
+        }
+
+
+        .message.show {
+
+            opacity: 1;
+
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            h1 {
+
+                font-size: 42px;
+
+            }
+
+
+            .palette {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .color-card {
+
+                min-height: 220px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="badge">
+            ✦ CREATIVE COLOR TOOL
+        </div>
+
+
+        <h1>
+            Color Lab
+        </h1>
+
+
+        <p class="subtitle">
+            Generate beautiful colors for your next project.
+        </p>
+
+
+        <!-- COLOR CARDS -->
+
+        <section
+            id="palette"
+            class="palette">
+        </section>
+
+
+        <!-- BUTTON -->
+
+        <button
+            id="generateBtn"
+            class="generate-btn">
+
+            Generate Palette ✨
+
+        </button>
+
+
+        <!-- MESSAGE -->
+
+        <p
+            id="message"
+            class="message">
+
+            Color copied!
+
+        </p>
+
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+
+        // ==========================================
+        // COLOR DATA
+        // ==========================================
+
+        const colors = [
+
+            {
+                name: "Electric Violet",
+                hex: "#8B5CF6"
+            },
+
+            {
+                name: "Ocean Cyan",
+                hex: "#06B6D4"
+            },
+
+            {
+                name: "Sunset Orange",
+                hex: "#F97316"
+            }
+
+        ];
+
+
+        // ==========================================
+        // SELECT DOM ELEMENTS
+        // ==========================================
+
+        const palette =
+            document.querySelector("#palette");
+
+
+        const generateBtn =
+            document.querySelector("#generateBtn");
+
+
+        const message =
+            document.querySelector("#message");
+
+
+        // ==========================================
+        // DISPLAY COLORS
+        // ==========================================
+
+        function displayColors() {
+
+
+            // Clear previous colors
+
+            palette.innerHTML = "";
+
+
+            // Generate HTML for every color
+
+            const colorCards = colors.map(color => {
+
+                return `
+
+                    <div
+                        class="color-card"
+                        style="background: ${color.hex}"
+                        data-color="${color.hex}">
+
+                        <div class="color-info">
+
+                            <p class="color-name">
+                                ${color.name}
+                            </p>
+
+                            <p class="hex">
+                                ${color.hex}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+
+            // Add cards to page
+
+            palette.innerHTML =
+                colorCards.join("");
+
+
+            // Select all cards
+
+            const cards =
+                document.querySelectorAll(".color-card");
+
+
+            // Add click event to each card
+
+            cards.forEach(card => {
+
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        const color =
+                            card.dataset.color;
+
+
+                        navigator.clipboard.writeText(
+                            color
+                        );
+
+
+                        message.classList.add(
+                            "show"
+                        );
+
+
+                        setTimeout(() => {
+
+                            message.classList.remove(
+                                "show"
+                            );
+
+                        }, 1500);
+
+                    }
+                );
+
+            });
+
+        }
+
+
+        // ==========================================
+        // INITIAL DISPLAY
+        // ==========================================
+
+        displayColors();
+
+
+        // ==========================================
+        // GENERATE BUTTON
+        // ==========================================
+
+        generateBtn.addEventListener(
+            "click",
+            () => {
+
+                displayColors();
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>
