@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>JavaScript Quiz</title>
+
+
+    <style>
+
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    #302052,
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    #103d48,
+                    transparent 35%
+                ),
+
+                #08090d;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 25px;
+
+        }
+
+
+        /* =========================================
+           QUIZ CONTAINER
+        ========================================= */
+
+        .quiz-container {
+
+            width: 100%;
+
+            max-width: 720px;
+
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .brand {
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+
+            color: #8f96a8;
+
+        }
+
+
+        .question-number {
+
+            font-size: 12px;
+
+            color: #8f96a8;
+
+        }
+
+
+        /* =========================================
+           PROGRESS BAR
+        ========================================= */
+
+        .progress {
+
+            width: 100%;
+
+            height: 4px;
+
+            background:
+                rgba(255,255,255,0.08);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: 20%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #8b5cf6,
+                    #22d3ee
+                );
+
+            border-radius: 20px;
+
+            transition:
+                width 0.4s ease;
+
+        }
+
+
+        /* =========================================
+           QUIZ CARD
+        ========================================= */
+
+        .quiz-card {
+
+            background:
+                rgba(255,255,255,0.055);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.1);
+
+            border-radius:
+                28px;
+
+            padding:
+                35px;
+
+            backdrop-filter:
+                blur(25px);
+
+            box-shadow:
+                0 30px 80px
+                rgba(0,0,0,0.4);
+
+        }
+
+
+        /* =========================================
+           QUESTION
+        ========================================= */
+
+        .question-label {
+
+            color:
+                #8b5cf6;
+
+            font-size:
+                10px;
+
+            letter-spacing:
+                2px;
+
+            text-transform:
+                uppercase;
+
+            margin-bottom:
+                12px;
+
+        }
+
+
+        #question {
+
+            font-size:
+                clamp(24px, 4vw, 34px);
+
+            line-height:
+                1.25;
+
+            letter-spacing:
+                -1px;
+
+            margin-bottom:
+                28px;
+
+        }
+
+
+        /* =========================================
+           OPTIONS
+        ========================================= */
+
+        .options {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                12px;
+
+        }
+
+
+        .option {
+
+            width:
+                100%;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            padding:
+                16px 18px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.09);
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border-radius:
+                15px;
+
+            color:
+                #cdd1dc;
+
+            cursor:
+                pointer;
+
+            text-align:
+                left;
+
+            font-size:
+                14px;
+
+            transition:
+                all 0.25s ease;
+
+        }
+
+
+        .option:hover {
+
+            border-color:
+                rgba(139,92,246,0.45);
+
+            background:
+                rgba(139,92,246,0.09);
+
+            transform:
+                translateX(4px);
+
+        }
+
+
+        .option-letter {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            min-width:
+                34px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(255,255,255,0.06);
+
+            color:
+                #9ca3b5;
+
+            font-weight:
+                bold;
+
+            font-size:
+                12px;
+
+        }
+
+
+        /* =========================================
+           SELECTED
+        ========================================= */
+
+        .option.selected {
+
+            border-color:
+                #8b5cf6;
+
+            background:
+                rgba(139,92,246,0.15);
+
+            color:
+                white;
+
+        }
+
+
+        .option.selected
+        .option-letter {
+
+            background:
+                #8b5cf6;
+
+            color:
+                white;
+
+        }
+
+
+        /* =========================================
+           CORRECT
+        ========================================= */
+
+        .option.correct {
+
+            border-color:
+                #22c55e;
+
+            background:
+                rgba(34,197,94,0.12);
+
+        }
+
+
+        .option.correct
+        .option-letter {
+
+            background:
+                #22c55e;
+
+            color:
+                white;
+
+        }
+
+
+        /* =========================================
+           WRONG
+        ========================================= */
+
+        .option.wrong {
+
+            border-color:
+                #ef4444;
+
+            background:
+                rgba(239,68,68,0.12);
+
+        }
+
+
+        .option.wrong
+        .option-letter {
+
+            background:
+                #ef4444;
+
+            color:
+                white;
+
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .quiz-footer {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-top:
+                30px;
+
+        }
+
+
+        .score {
+
+            color:
+                #8f96a8;
+
+            font-size:
+                12px;
+
+        }
+
+
+        .score span {
+
+            color:
+                white;
+
+            font-weight:
+                bold;
+
+        }
+
+
+        /* =========================================
+           NEXT BUTTON
+        ========================================= */
+
+        #nextButton {
+
+            border:
+                none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6366f1
+                );
+
+            color:
+                white;
+
+            padding:
+                13px 22px;
+
+            border-radius:
+                12px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.3s;
+
+        }
+
+
+        #nextButton:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 30px
+                rgba(99,102,241,0.3);
+
+        }
+
+
+        /* =========================================
+           RESULT SCREEN
+        ========================================= */
+
+        .result {
+
+            display:
+                none;
+
+            text-align:
+                center;
+
+            padding:
+                25px 0;
+
+        }
+
+
+        .result-icon {
+
+            font-size:
+                60px;
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        .result h2 {
+
+            font-size:
+                34px;
+
+            margin-bottom:
+                10px;
+
+        }
+
+
+        .result p {
+
+            color:
+                #8f96a8;
+
+            font-size:
+                14px;
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        #restartButton {
+
+            border:
+                none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6366f1
+                );
+
+            color:
+                white;
+
+            padding:
+                13px 25px;
+
+            border-radius:
+                12px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                bold;
+
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 600px) {
+
+            .quiz-card {
+
+                padding:
+                    24px;
+
+                border-radius:
+                    22px;
+
+            }
+
+
+            .quiz-footer {
+
+                flex-direction:
+                    column;
+
+                gap:
+                    15px;
+
+                align-items:
+                    stretch;
+
+            }
+
+
+            #nextButton {
+
+                width:
+                    100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="quiz-container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="header">
+
+            <span class="brand">
+                JAVASCRIPT QUIZ
+            </span>
+
+            <span
+                id="questionNumber"
+                class="question-number">
+
+                01 / 05
+
+            </span>
+
+        </div>
+
+
+        <!-- =====================================
+             PROGRESS
+        ====================================== -->
+
+        <div class="progress">
+
+            <div
+                id="progressBar"
+                class="progress-bar">
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             QUIZ CARD
+        ====================================== -->
+
+        <section class="quiz-card">
+
+
+            <!-- QUIZ -->
+
+            <div id="quiz">
+
+
+                <p class="question-label">
+                    Question
+                </p>
+
+
+                <h1 id="question">
+                    Loading question...
+                </h1>
+
+
+                <div
+                    id="options"
+                    class="options">
+                </div>
+
+
+                <div class="quiz-footer">
+
+
+                    <p class="score">
+
+                        Score:
+                        <span id="score">
+                            0
+                        </span>
+
+                    </p>
+
+
+                    <button
+                        id="nextButton">
+
+                        Next Question →
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <div
+                id="result"
+                class="result">
+
+                <div class="result-icon">
+                    🎉
+                </div>
+
+
+                <h2>
+                    Quiz Complete!
+                </h2>
+
+
+                <p id="resultText">
+                    You scored 0 out of 5.
+                </p>
+
+
+                <button
+                    id="restartButton">
+
+                    Try Again
+
+                </button>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        // =========================================
+        // QUESTIONS DATA
+        // =========================================
+
+        const questions = [
+
+            {
+                question:
+                    "What does map() return?",
+
+                options: [
+                    "The original array",
+                    "A new array",
+                    "An object",
+                    "A string"
+                ],
+
+                answer:
+                    "A new array"
+            },
+
+
+            {
+                question:
+                    "Which keyword creates a constant variable?",
+
+                options: [
+                    "var",
+                    "let",
+                    "const",
+                    "constant"
+                ],
+
+                answer:
+                    "const"
+            },
+
+
+            {
+                question:
+                    "Which method selects the first matching DOM element?",
+
+                options: [
+                    "querySelector()",
+                    "querySelectorAll()",
+                    "getElements()",
+                    "select()"
+                ],
+
+                answer:
+                    "querySelector()"
+            },
+
+
+            {
+                question:
+                    "Which property changes the text inside an element?",
+
+                options: [
+                    "innerTextOnly",
+                    "textContent",
+                    "changeText",
+                    "text"
+                ],
+
+                answer:
+                    "textContent"
+            },
+
+
+            {
+                question:
+                    "Which method adds an event listener?",
+
+                options: [
+                    "listen()",
+                    "event()",
+                    "addEventListener()",
+                    "onEvent()"
+                ],
+
+                answer:
+                    "addEventListener()"
+            }
+
+        ];
+
+
+        // =========================================
+        // QUIZ STATE
+        // =========================================
+
+        let currentQuestion = 0;
+
+        let score = 0;
+
+        let selectedAnswer = null;
+
+        let answered = false;
+
+
+        // =========================================
+        // DOM ELEMENTS
+        // =========================================
+
+        const questionElement =
+            document.querySelector("#question");
+
+
+        const optionsElement =
+            document.querySelector("#options");
+
+
+        const questionNumberElement =
+            document.querySelector("#questionNumber");
+
+
+        const progressBar =
+            document.querySelector("#progressBar");
+
+
+        const scoreElement =
+            document.querySelector("#score");
+
+
+        const nextButton =
+            document.querySelector("#nextButton");
+
+
+        const quizElement =
+            document.querySelector("#quiz");
+
+
+        const resultElement =
+            document.querySelector("#result");
+
+
+        const resultText =
+            document.querySelector("#resultText");
+
+
+        const restartButton =
+            document.querySelector("#restartButton");
+
+
+        // =========================================
+        // DISPLAY QUESTION
+        // =========================================
+
+        function displayQuestion() {
+
+
+            const question =
+                questions[currentQuestion];
+
+
+            // Reset state
+
+            selectedAnswer = null;
+
+            answered = false;
+
+
+            // Question text
+
+            questionElement.textContent =
+                question.question;
+
+
+            // Question number
+
+            questionNumberElement.textContent =
+                `${String(currentQuestion + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
+
+
+            // Progress
+
+            const progress =
+                ((currentQuestion + 1)
+                / questions.length) * 100;
+
+
+            progressBar.style.width =
+                `${progress}%`;
+
+
+            // Generate options
+
+            const optionsHTML =
+                question.options.map(
+                    (option, index) => {
+
+                        const letter =
+                            String.fromCharCode(
+                                65 + index
+                            );
+
+
+                        return `
+
+                            <button
+                                class="option"
+                                data-answer="${option}">
+
+                                <span
+                                    class="option-letter">
+
+                                    ${letter}
+
+                                </span>
+
+                                <span>
+
+                                    ${option}
+
+                                </span>
+
+                            </button>
+
+                        `;
+
+                    }
+                );
+
+
+            optionsElement.innerHTML =
+                optionsHTML.join("");
+
+
+            // Add events to options
+
+            const optionButtons =
+                document.querySelectorAll(
+                    ".option"
+                );
+
+
+            optionButtons.forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        selectAnswer(
+                            button
+                        );
+
+                    }
+                );
+
+            });
+
+        }
+
+
+        // =========================================
+        // SELECT ANSWER
+        // =========================================
+
+        function selectAnswer(button) {
+
+
+            // Prevent multiple answers
+
+            if (answered) {
+                return;
+            }
+
+
+            answered = true;
+
+
+            selectedAnswer =
+                button.dataset.answer;
+
+
+            const correctAnswer =
+                questions[currentQuestion].answer;
+
+
+            // Mark selected
+
+            button.classList.add(
+                "selected"
+            );
+
+
+            // Check answer
+
+            if (
+                selectedAnswer ===
+                correctAnswer
+            ) {
+
+                button.classList.remove(
+                    "selected"
+                );
+
+                button.classList.add(
+                    "correct"
+                );
+
+                score++;
+
+                scoreElement.textContent =
+                    score;
+
+            }
+
+            else {
+
+                button.classList.remove(
+                    "selected"
+                );
+
+                button.classList.add(
+                    "wrong"
+                );
+
+
+                // Show correct answer
+
+                const optionButtons =
+                    document.querySelectorAll(
+                        ".option"
+                    );
+
+
+                optionButtons.forEach(option => {
+
+                    if (
+                        option.dataset.answer ===
+                        correctAnswer
+                    ) {
+
+                        option.classList.add(
+                            "correct"
+                        );
+
+                    }
+
+                });
+
+            }
+
+        }
+
+
+        // =========================================
+        // NEXT QUESTION
+        // =========================================
+
+        nextButton.addEventListener(
+            "click",
+            () => {
+
+
+                // Don't continue without answer
+
+                if (!answered) {
+
+                    alert(
+                        "Please select an answer first!"
+                    );
+
+                    return;
+
+                }
+
+
+                // Move to next question
+
+                currentQuestion++;
+
+
+                // Check if quiz is finished
+
+                if (
+                    currentQuestion <
+                    questions.length
+                ) {
+
+                    displayQuestion();
+
+                }
+
+                else {
+
+                    showResult();
+
+                }
+
+            }
+        );
+
+
+        // =========================================
+        // SHOW RESULT
+        // =========================================
+
+        function showResult() {
+
+
+            quizElement.style.display =
+                "none";
+
+
+            resultElement.style.display =
+                "block";
+
+
+            resultText.textContent =
+                `You scored ${score} out of ${questions.length}.`;
+
+        }
+
+
+        // =========================================
+        // RESTART QUIZ
+        // =========================================
+
+        restartButton.addEventListener(
+            "click",
+            () => {
+
+                currentQuestion = 0;
+
+                score = 0;
+
+                scoreElement.textContent =
+                    "0";
+
+
+                quizElement.style.display =
+                    "block";
+
+
+                resultElement.style.display =
+                    "none";
+
+
+                displayQuestion();
+
+            }
+        );
+
+
+        // =========================================
+        // START QUIZ
+        // =========================================
+
+        displayQuestion();
+
+
+    </script>
+
+</body>
+
+</html>
