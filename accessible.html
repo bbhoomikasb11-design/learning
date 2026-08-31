@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Accessible — Accessibility Controls</title>
+
+
+    <style>
+
+        /* =====================================
+           RESET
+        ===================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================
+           CSS VARIABLES
+        ===================================== */
+
+        :root {
+
+            --bg: #08090d;
+
+            --surface:
+                rgba(255,255,255,0.055);
+
+            --border:
+                rgba(255,255,255,0.1);
+
+            --text: #f5f5f7;
+
+            --muted: #858b9d;
+
+            --accent: #8b5cf6;
+
+            --accent-light: #a78bfa;
+
+        }
+
+
+        /* =====================================
+           BODY
+        ===================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    #30204f,
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    #103c49,
+                    transparent 35%
+                ),
+
+                var(--bg);
+
+            color:
+                var(--text);
+
+            transition:
+                background 0.4s ease,
+                color 0.4s ease;
+
+        }
+
+
+        /* =====================================
+           MAIN
+        ===================================== */
+
+        .page {
+
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: auto;
+
+            padding:
+                50px 0;
+
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        .header {
+
+            margin-bottom:
+                35px;
+
+        }
+
+
+        .badge {
+
+            display:
+                inline-block;
+
+            padding:
+                7px 13px;
+
+            border-radius:
+                50px;
+
+            background:
+                rgba(139,92,246,0.12);
+
+            border:
+                1px solid
+                rgba(139,92,246,0.25);
+
+            color:
+                var(--accent-light);
+
+            font-size:
+                10px;
+
+            letter-spacing:
+                2px;
+
+            margin-bottom:
+                15px;
+
+        }
+
+
+        h1 {
+
+            font-size:
+                clamp(40px, 6vw, 68px);
+
+            letter-spacing:
+                -3px;
+
+            line-height:
+                1;
+
+            margin-bottom:
+                15px;
+
+        }
+
+
+        .header p {
+
+            max-width:
+                600px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                14px;
+
+            line-height:
+                1.7;
+
+        }
+
+
+        /* =====================================
+           LAYOUT
+        ===================================== */
+
+        .layout {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                340px 1fr;
+
+            gap:
+                20px;
+
+            align-items:
+                start;
+
+        }
+
+
+        /* =====================================
+           CONTROL PANEL
+        ===================================== */
+
+        .panel {
+
+            background:
+                var(--surface);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                24px;
+
+            padding:
+                25px;
+
+            backdrop-filter:
+                blur(20px);
+
+            position:
+                sticky;
+
+            top:
+                20px;
+
+        }
+
+
+        .panel-title {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            padding-bottom:
+                18px;
+
+            border-bottom:
+                1px solid
+                var(--border);
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        .panel-title h2 {
+
+            font-size:
+                17px;
+
+        }
+
+
+        .panel-title span {
+
+            font-size:
+                10px;
+
+            color:
+                var(--muted);
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        /* =====================================
+           CONTROL
+        ===================================== */
+
+        .control {
+
+            padding:
+                18px 0;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.06);
+
+        }
+
+
+        .control:last-of-type {
+
+            border-bottom:
+                none;
+
+        }
+
+
+        .control-header {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            margin-bottom:
+                12px;
+
+        }
+
+
+        .control-name {
+
+            font-size:
+                13px;
+
+            color:
+                #d9dce4;
+
+        }
+
+
+        .control-value {
+
+            font-size:
+                11px;
+
+            color:
+                var(--accent-light);
+
+        }
+
+
+        /* =====================================
+           RANGE SLIDER
+        ===================================== */
+
+        input[type="range"] {
+
+            width:
+                100%;
+
+            accent-color:
+                var(--accent);
+
+            cursor:
+                pointer;
+
+        }
+
+
+        /* =====================================
+           TOGGLE
+        ===================================== */
+
+        .toggle-row {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+        }
+
+
+        .toggle {
+
+            width:
+                46px;
+
+            height:
+                25px;
+
+            border:
+                none;
+
+            border-radius:
+                50px;
+
+            background:
+                rgba(255,255,255,0.1);
+
+            cursor:
+                pointer;
+
+            padding:
+                3px;
+
+            transition:
+                0.3s;
+
+        }
+
+
+        .toggle-circle {
+
+            display:
+                block;
+
+            width:
+                19px;
+
+            height:
+                19px;
+
+            border-radius:
+                50%;
+
+            background:
+                #9da3b1;
+
+            transition:
+                transform 0.3s,
+                background 0.3s;
+
+        }
+
+
+        .toggle.active {
+
+            background:
+                var(--accent);
+
+        }
+
+
+        .toggle.active
+        .toggle-circle {
+
+            transform:
+                translateX(21px);
+
+            background:
+                white;
+
+        }
+
+
+        /* =====================================
+           RESET BUTTON
+        ===================================== */
+
+        .reset-button {
+
+            width:
+                100%;
+
+            margin-top:
+                20px;
+
+            padding:
+                12px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(255,255,255,0.04);
+
+            color:
+                #cdd1dc;
+
+            border-radius:
+                12px;
+
+            cursor:
+                pointer;
+
+            font-size:
+                12px;
+
+            transition:
+                0.3s;
+
+        }
+
+
+        .reset-button:hover {
+
+            background:
+                rgba(255,255,255,0.09);
+
+        }
+
+
+        /* =====================================
+           PREVIEW
+        ===================================== */
+
+        .preview {
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius:
+                24px;
+
+            overflow:
+                hidden;
+
+        }
+
+
+        /* =====================================
+           PREVIEW HEADER
+        ===================================== */
+
+        .preview-header {
+
+            padding:
+                15px 20px;
+
+            border-bottom:
+                1px solid
+                var(--border);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+        }
+
+
+        .window-dot {
+
+            width:
+                8px;
+
+            height:
+                8px;
+
+            border-radius:
+                50%;
+
+            background:
+                #555;
+
+        }
+
+
+        .preview-header span {
+
+            margin-left:
+                auto;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        /* =====================================
+           PREVIEW CONTENT
+        ===================================== */
+
+        .preview-content {
+
+            padding:
+                50px;
+
+        }
+
+
+        .preview-label {
+
+            color:
+                var(--accent-light);
+
+            font-size:
+                10px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                2px;
+
+            margin-bottom:
+                15px;
+
+        }
+
+
+        .preview-content h2 {
+
+            font-size:
+                40px;
+
+            line-height:
+                1.15;
+
+            margin-bottom:
+                18px;
+
+        }
+
+
+        .preview-content p {
+
+            color:
+                var(--muted);
+
+            line-height:
+                1.8;
+
+            font-size:
+                14px;
+
+            max-width:
+                600px;
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        /* =====================================
+           PREVIEW CARDS
+        ===================================== */
+
+        .preview-cards {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                12px;
+
+            margin-top:
+                30px;
+
+        }
+
+
+        .preview-card {
+
+            padding:
+                20px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border-radius:
+                15px;
+
+        }
+
+
+        .preview-card strong {
+
+            display:
+                block;
+
+            margin-bottom:
+                7px;
+
+            font-size:
+                14px;
+
+        }
+
+
+        .preview-card span {
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        /* =====================================
+           PREVIEW BUTTON
+        ===================================== */
+
+        .preview-button {
+
+            border:
+                none;
+
+            background:
+                var(--accent);
+
+            color:
+                white;
+
+            padding:
+                13px 20px;
+
+            border-radius:
+                12px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.3s;
+
+        }
+
+
+        .preview-button:hover {
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        /* =====================================
+           HIGH CONTRAST MODE
+        ===================================== */
+
+        body.high-contrast {
+
+            background:
+                #000000;
+
+            color:
+                #ffffff;
+
+        }
+
+
+        body.high-contrast
+        .panel,
+
+        body.high-contrast
+        .preview {
+
+            background:
+                #000000;
+
+            border:
+                2px solid
+                #ffffff;
+
+        }
+
+
+        body.high-contrast
+        .preview-card {
+
+            background:
+                #000000;
+
+            border:
+                2px solid
+                #ffffff;
+
+        }
+
+
+        body.high-contrast
+        .preview-content p,
+
+        body.high-contrast
+        .header p,
+
+        body.high-contrast
+        .control-value {
+
+            color:
+                #ffffff;
+
+        }
+
+
+        body.high-contrast
+        .preview-button {
+
+            background:
+                #ffffff;
+
+            color:
+                #000000;
+
+        }
+
+
+        /* =====================================
+           DYSLEXIA MODE
+        ===================================== */
+
+        body.dyslexia {
+
+            font-family:
+                "Trebuchet MS",
+                Arial,
+                sans-serif;
+
+        }
+
+
+        body.dyslexia
+        .preview-content p {
+
+            line-height:
+                2.1;
+
+        }
+
+
+        /* =====================================
+           REDUCED MOTION
+        ===================================== */
+
+        body.reduce-motion *,
+        body.reduce-motion *::before,
+        body.reduce-motion *::after {
+
+            animation-duration:
+                0.01ms !important;
+
+            animation-iteration-count:
+                1 !important;
+
+            transition-duration:
+                0.01ms !important;
+
+            scroll-behavior:
+                auto !important;
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 850px) {
+
+            .layout {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .panel {
+
+                position:
+                    static;
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .page {
+
+                width:
+                    92%;
+
+                padding:
+                    30px 0;
+
+            }
+
+
+            .preview-content {
+
+                padding:
+                    30px 22px;
+
+            }
+
+
+            .preview-content h2 {
+
+                font-size:
+                    30px;
+
+            }
+
+
+            .preview-cards {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="page">
+
+
+        <!-- =================================
+             HEADER
+        ================================== -->
+
+        <header class="header">
+
+            <div class="badge">
+                ♿ ACCESSIBILITY LAB
+            </div>
+
+
+            <h1>
+                Design for
+                <span
+                    style="color:#a78bfa;">
+                    everyone.
+                </span>
+            </h1>
+
+
+            <p>
+                Adjust the experience below and see how
+                accessibility settings can change the way
+                a website feels and works.
+            </p>
+
+        </header>
+
+
+        <!-- =================================
+             MAIN LAYOUT
+        ================================== -->
+
+        <section class="layout">
+
+
+            <!-- =================================
+                 CONTROL PANEL
+            ================================== -->
+
+            <aside class="panel">
+
+
+                <div class="panel-title">
+
+                    <h2>
+                        Accessibility
+                    </h2>
+
+                    <span>
+                        Controls
+                    </span>
+
+                </div>
+
+
+                <!-- FONT SIZE -->
+
+                <div class="control">
+
+                    <div class="control-header">
+
+                        <span class="control-name">
+                            Font Size
+                        </span>
+
+                        <span
+                            id="fontValue"
+                            class="control-value">
+
+                            100%
+
+                        </span>
+
+                    </div>
+
+
+                    <input
+                        id="fontSize"
+                        type="range"
+                        min="80"
+                        max="140"
+                        value="100"
+                        step="5"
+                    >
+
+                </div>
+
+
+                <!-- LETTER SPACING -->
+
+                <div class="control">
+
+                    <div class="control-header">
+
+                        <span class="control-name">
+                            Letter Spacing
+                        </span>
+
+                        <span
+                            id="spacingValue"
+                            class="control-value">
+
+                            Normal
+
+                        </span>
+
+                    </div>
+
+
+                    <input
+                        id="letterSpacing"
+                        type="range"
+                        min="0"
+                        max="5"
+                        value="0"
+                        step="1"
+                    >
+
+                </div>
+
+
+                <!-- HIGH CONTRAST -->
+
+                <div class="control">
+
+                    <div class="toggle-row">
+
+                        <span class="control-name">
+                            High Contrast
+                        </span>
+
+
+                        <button
+                            id="contrastToggle"
+                            class="toggle"
+                            aria-label="Toggle high contrast">
+
+                            <span
+                                class="toggle-circle">
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DYSLEXIA -->
+
+                <div class="control">
+
+                    <div class="toggle-row">
+
+                        <span class="control-name">
+                            Dyslexia Friendly
+                        </span>
+
+
+                        <button
+                            id="dyslexiaToggle"
+                            class="toggle"
+                            aria-label="Toggle dyslexia friendly mode">
+
+                            <span
+                                class="toggle-circle">
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REDUCED MOTION -->
+
+                <div class="control">
+
+                    <div class="toggle-row">
+
+                        <span class="control-name">
+                            Reduce Motion
+                        </span>
+
+
+                        <button
+                            id="motionToggle"
+                            class="toggle"
+                            aria-label="Toggle reduced motion">
+
+                            <span
+                                class="toggle-circle">
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESET -->
+
+                <button
+                    id="resetButton"
+                    class="reset-button">
+
+                    Reset Settings
+
+                </button>
+
+
+            </aside>
+
+
+            <!-- =================================
+                 PREVIEW
+            ================================== -->
+
+            <section class="preview">
+
+
+                <div class="preview-header">
+
+                    <span class="window-dot"></span>
+
+                    <span class="window-dot"></span>
+
+                    <span class="window-dot"></span>
+
+                    <span>
+                        LIVE PREVIEW
+                    </span>
+
+                </div>
+
+
+                <div class="preview-content">
+
+
+                    <p class="preview-label">
+                        Inclusive Design
+                    </p>
+
+
+                    <h2>
+                        Everyone should be able
+                        to experience the web.
+                    </h2>
+
+
+                    <p>
+                        Accessibility is not about making
+                        a website look different. It is about
+                        giving people the flexibility to
+                        interact with digital experiences
+                        in ways that work best for them.
+                    </p>
+
+
+                    <button
+                        class="preview-button">
+
+                        Explore Experience →
+
+                    </button>
+
+
+                    <div class="preview-cards">
+
+
+                        <div class="preview-card">
+
+                            <strong>
+                                👁 Visual
+                            </strong>
+
+                            <span>
+                                Adjust contrast and text size
+                                for easier reading.
+                            </span>
+
+                        </div>
+
+
+                        <div class="preview-card">
+
+                            <strong>
+                                📖 Reading
+                            </strong>
+
+                            <span>
+                                Improve spacing and typography
+                                for comfortable reading.
+                            </span>
+
+                        </div>
+
+
+                        <div class="preview-card">
+
+                            <strong>
+                                🖱 Motor
+                            </strong>
+
+                            <span>
+                                Reduce unnecessary movement
+                                and interaction complexity.
+                            </span>
+
+                        </div>
+
+
+                        <div class="preview-card">
+
+                            <strong>
+                                🧠 Cognitive
+                            </strong>
+
+                            <span>
+                                Create calmer interfaces with
+                                fewer distractions.
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ====================================== -->
+
+    <script>
+
+
+        // =====================================
+        // SELECT ELEMENTS
+        // =====================================
+
+        const fontSize =
+            document.querySelector("#fontSize");
+
+
+        const fontValue =
+            document.querySelector("#fontValue");
+
+
+        const letterSpacing =
+            document.querySelector("#letterSpacing");
+
+
+        const spacingValue =
+            document.querySelector("#spacingValue");
+
+
+        const contrastToggle =
+            document.querySelector("#contrastToggle");
+
+
+        const dyslexiaToggle =
+            document.querySelector("#dyslexiaToggle");
+
+
+        const motionToggle =
+            document.querySelector("#motionToggle");
+
+
+        const resetButton =
+            document.querySelector("#resetButton");
+
+
+        // =====================================
+        // FONT SIZE
+        // =====================================
+
+        fontSize.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    fontSize.value;
+
+
+                document.body.style.fontSize =
+                    `${value}%`;
+
+
+                fontValue.textContent =
+                    `${value}%`;
+
+            }
+        );
+
+
+        // =====================================
+        // LETTER SPACING
+        // =====================================
+
+        letterSpacing.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    letterSpacing.value;
+
+
+                document.body.style.letterSpacing =
+                    `${value}px`;
+
+
+                if (value == 0) {
+
+                    spacingValue.textContent =
+                        "Normal";
+
+                }
+
+                else {
+
+                    spacingValue.textContent =
+                        `${value}px`;
+
+                }
+
+            }
+        );
+
+
+        // =====================================
+        // HIGH CONTRAST
+        // =====================================
+
+        contrastToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "high-contrast"
+                );
+
+
+                contrastToggle.classList.toggle(
+                    "active"
+                );
+
+            }
+        );
+
+
+        // =====================================
+        // DYSLEXIA MODE
+        // =====================================
+
+        dyslexiaToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "dyslexia"
+                );
+
+
+                dyslexiaToggle.classList.toggle(
+                    "active"
+                );
+
+            }
+        );
+
+
+        // =====================================
+        // REDUCED MOTION
+        // =====================================
+
+        motionToggle.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "reduce-motion"
+                );
+
+
+                motionToggle.classList.toggle(
+                    "active"
+                );
+
+            }
+        );
+
+
+        // =====================================
+        // RESET
+        // =====================================
+
+        resetButton.addEventListener(
+            "click",
+            () => {
+
+
+                // Reset font
+
+                fontSize.value =
+                    100;
+
+                fontValue.textContent =
+                    "100%";
+
+                document.body.style.fontSize =
+                    "";
+
+
+                // Reset spacing
+
+                letterSpacing.value =
+                    0;
+
+                spacingValue.textContent =
+                    "Normal";
+
+                document.body.style.letterSpacing =
+                    "";
+
+
+                // Remove classes
+
+                document.body.classList.remove(
+                    "high-contrast"
+                );
+
+                document.body.classList.remove(
+                    "dyslexia"
+                );
+
+                document.body.classList.remove(
+                    "reduce-motion"
+                );
+
+
+                // Reset toggle buttons
+
+                contrastToggle.classList.remove(
+                    "active"
+                );
+
+                dyslexiaToggle.classList.remove(
+                    "active"
+                );
+
+                motionToggle.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
