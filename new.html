@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TaskFlow</title>
+
+
+    <style>
+
+        /* =====================================
+           RESET
+        ===================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================
+           BODY
+        ===================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    #30204f,
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    #103c49,
+                    transparent 35%
+                ),
+
+                #08090d;
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            padding: 50px 20px;
+
+        }
+
+
+        /* =====================================
+           MAIN CONTAINER
+        ===================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        .header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .eyebrow {
+
+            color: #8b5cf6;
+
+            font-size: 10px;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        h1 {
+
+            font-size: 46px;
+
+            letter-spacing: -2px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .subtitle {
+
+            color: #7e8597;
+
+            font-size: 13px;
+
+        }
+
+
+        .date {
+
+            color: #686f81;
+
+            font-size: 11px;
+
+            text-align: right;
+
+        }
+
+
+        /* =====================================
+           STATS CARD
+        ===================================== */
+
+        .stats-card {
+
+            padding: 22px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            margin-bottom: 18px;
+
+            backdrop-filter: blur(20px);
+
+        }
+
+
+        .stats-top {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .stats-top span {
+
+            color: #8c93a4;
+
+            font-size: 12px;
+
+        }
+
+
+        #progressText {
+
+            color: white;
+
+            font-weight: bold;
+
+        }
+
+
+        .progress {
+
+            height: 7px;
+
+            background:
+                rgba(255,255,255,0.07);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: 0%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #8b5cf6,
+                    #22d3ee
+                );
+
+            border-radius: 20px;
+
+            transition:
+                width 0.4s ease;
+
+        }
+
+
+        /* =====================================
+           INPUT AREA
+        ===================================== */
+
+        .input-card {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        #taskInput {
+
+            flex: 1;
+
+            height: 52px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.1);
+
+            border-radius: 14px;
+
+            background:
+                rgba(255,255,255,0.05);
+
+            color: white;
+
+            outline: none;
+
+            padding:
+                0 17px;
+
+            font-size: 13px;
+
+            transition:
+                border 0.3s;
+
+        }
+
+
+        #taskInput::placeholder {
+
+            color: #666d7e;
+
+        }
+
+
+        #taskInput:focus {
+
+            border-color:
+                rgba(139,92,246,0.6);
+
+        }
+
+
+        #addButton {
+
+            height: 52px;
+
+            padding:
+                0 20px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #8b5cf6,
+                    #6366f1
+                );
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+
+        #addButton:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 30px
+                rgba(99,102,241,0.3);
+
+        }
+
+
+        /* =====================================
+           FILTERS
+        ===================================== */
+
+        .filters {
+
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .filter {
+
+            padding:
+                8px 14px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            background:
+                rgba(255,255,255,0.04);
+
+            color:
+                #7d8495;
+
+            border-radius:
+                10px;
+
+            cursor:
+                pointer;
+
+            font-size:
+                11px;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        .filter:hover {
+
+            color:
+                white;
+
+        }
+
+
+        .filter.active {
+
+            color:
+                white;
+
+            background:
+                rgba(139,92,246,0.16);
+
+            border-color:
+                rgba(139,92,246,0.35);
+
+        }
+
+
+        /* =====================================
+           TASK LIST
+        ===================================== */
+
+        #taskList {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                10px;
+
+        }
+
+
+        /* =====================================
+           TASK ITEM
+        ===================================== */
+
+        .task {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                13px;
+
+            padding:
+                15px 16px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            border-radius:
+                16px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            transition:
+                all 0.25s ease;
+
+        }
+
+
+        .task:hover {
+
+            border-color:
+                rgba(255,255,255,0.15);
+
+            transform:
+                translateX(3px);
+
+        }
+
+
+        /* =====================================
+           CHECK BUTTON
+        ===================================== */
+
+        .check-button {
+
+            width:
+                23px;
+
+            height:
+                23px;
+
+            min-width:
+                23px;
+
+            border:
+                1px solid
+                #555c6d;
+
+            background:
+                transparent;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                white;
+
+            font-size:
+                12px;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        .check-button:hover {
+
+            border-color:
+                #8b5cf6;
+
+        }
+
+
+        /* =====================================
+           COMPLETED TASK
+        ===================================== */
+
+        .task.completed
+        .check-button {
+
+            background:
+                #8b5cf6;
+
+            border-color:
+                #8b5cf6;
+
+        }
+
+
+        .task.completed
+        .task-text {
+
+            text-decoration:
+                line-through;
+
+            color:
+                #5e6473;
+
+        }
+
+
+        .task-text {
+
+            flex:
+                1;
+
+            font-size:
+                13px;
+
+            color:
+                #d4d7df;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        /* =====================================
+           DELETE BUTTON
+        ===================================== */
+
+        .delete-button {
+
+            border:
+                none;
+
+            background:
+                transparent;
+
+            color:
+                #5f6677;
+
+            cursor:
+                pointer;
+
+            font-size:
+                18px;
+
+            width:
+                30px;
+
+            height:
+                30px;
+
+            border-radius:
+                8px;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        .delete-button:hover {
+
+            color:
+                #ff6b6b;
+
+            background:
+                rgba(255,107,107,0.08);
+
+        }
+
+
+        /* =====================================
+           EMPTY STATE
+        ===================================== */
+
+        .empty {
+
+            text-align:
+                center;
+
+            padding:
+                55px 20px;
+
+            border:
+                1px dashed
+                rgba(255,255,255,0.1);
+
+            border-radius:
+                18px;
+
+            color:
+                #656c7c;
+
+        }
+
+
+        .empty-icon {
+
+            font-size:
+                38px;
+
+            margin-bottom:
+                12px;
+
+        }
+
+
+        .empty h3 {
+
+            color:
+                #9da3b1;
+
+            font-size:
+                14px;
+
+            margin-bottom:
+                6px;
+
+        }
+
+
+        .empty p {
+
+            font-size:
+                12px;
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 550px) {
+
+            body {
+
+                padding:
+                    30px 15px;
+
+            }
+
+
+            h1 {
+
+                font-size:
+                    38px;
+
+            }
+
+
+            .header {
+
+                flex-direction:
+                    column;
+
+                gap:
+                    15px;
+
+            }
+
+
+            .date {
+
+                text-align:
+                    left;
+
+            }
+
+
+            .input-card {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            #addButton {
+
+                width:
+                    100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <!-- =================================
+             HEADER
+        ================================== -->
+
+        <header class="header">
+
+            <div>
+
+                <p class="eyebrow">
+                    Personal productivity
+                </p>
+
+                <h1>
+                    TaskFlow
+                </h1>
+
+                <p class="subtitle">
+                    Turn small actions into big progress.
+                </p>
+
+            </div>
+
+
+            <div class="date">
+
+                <span id="currentDate">
+                    Today
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================
+             PROGRESS
+        ================================== -->
+
+        <section class="stats-card">
+
+            <div class="stats-top">
+
+                <span>
+                    Daily progress
+                </span>
+
+                <span id="progressText">
+                    0%
+                </span>
+
+            </div>
+
+
+            <div class="progress">
+
+                <div
+                    id="progressBar"
+                    class="progress-bar">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             INPUT
+        ================================== -->
+
+        <div class="input-card">
+
+            <input
+                id="taskInput"
+                type="text"
+                placeholder="What needs to be done?"
+            >
+
+
+            <button
+                id="addButton">
+
+                Add Task
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================
+             FILTERS
+        ================================== -->
+
+        <div class="filters">
+
+            <button
+                class="filter active"
+                data-filter="all">
+
+                All
+
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="active">
+
+                Active
+
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="completed">
+
+                Completed
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================
+             TASK LIST
+        ================================== -->
+
+        <section id="taskList"></section>
+
+
+    </main>
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ====================================== -->
+
+    <script>
+
+
+        // =====================================
+        // TASK DATA
+        // =====================================
+
+        let tasks = [
+
+            {
+                id: 1,
+                text: "Learn JavaScript DOM",
+                completed: true
+            },
+
+            {
+                id: 2,
+                text: "Practice JavaScript events",
+                completed: false
+            },
+
+            {
+                id: 3,
+                text: "Build a frontend project",
+                completed: false
+            }
+
+        ];
+
+
+        // =====================================
+        // CURRENT FILTER
+        // =====================================
+
+        let currentFilter = "all";
+
+
+        // =====================================
+        // DOM ELEMENTS
+        // =====================================
+
+        const taskInput =
+            document.querySelector("#taskInput");
+
+
+        const addButton =
+            document.querySelector("#addButton");
+
+
+        const taskList =
+            document.querySelector("#taskList");
+
+
+        const progressBar =
+            document.querySelector("#progressBar");
+
+
+        const progressText =
+            document.querySelector("#progressText");
+
+
+        const filters =
+            document.querySelectorAll(".filter");
+
+
+        const currentDate =
+            document.querySelector("#currentDate");
+
+
+        // =====================================
+        // DISPLAY DATE
+        // =====================================
+
+        const today =
+            new Date();
+
+
+        currentDate.textContent =
+            today.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+
+        // =====================================
+        // DISPLAY TASKS
+        // =====================================
+
+        function displayTasks() {
+
+
+            // Filter tasks
+
+            let filteredTasks = tasks;
+
+
+            if (currentFilter === "active") {
+
+                filteredTasks =
+                    tasks.filter(task =>
+                        !task.completed
+                    );
+
+            }
+
+
+            if (currentFilter === "completed") {
+
+                filteredTasks =
+                    tasks.filter(task =>
+                        task.completed
+                    );
+
+            }
+
+
+            // Empty state
+
+            if (filteredTasks.length === 0) {
+
+                taskList.innerHTML = `
+
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            ✨
+                        </div>
+
+                        <h3>
+                            Nothing here yet
+                        </h3>
+
+                        <p>
+                            Add a task and start making progress.
+                        </p>
+
+                    </div>
+
+                `;
+
+                updateProgress();
+
+                return;
+
+            }
+
+
+            // Create task HTML
+
+            const taskHTML =
+                filteredTasks.map(task => {
+
+                    return `
+
+                        <div
+                            class="task
+                            ${task.completed ? "completed" : ""}"
+                            data-id="${task.id}">
+
+
+                            <button
+                                class="check-button">
+
+                                ${task.completed ? "✓" : ""}
+
+                            </button>
+
+
+                            <span
+                                class="task-text">
+
+                                ${task.text}
+
+                            </span>
+
+
+                            <button
+                                class="delete-button">
+
+                                ×
+
+                            </button>
+
+
+                        </div>
+
+                    `;
+
+                });
+
+
+            taskList.innerHTML =
+                taskHTML.join("");
+
+
+            // =================================
+            // CHECK BUTTONS
+            // =================================
+
+            const checkButtons =
+                document.querySelectorAll(
+                    ".check-button"
+                );
+
+
+            checkButtons.forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const taskElement =
+                            button.closest(".task");
+
+
+                        const id =
+                            Number(
+                                taskElement.dataset.id
+                            );
+
+
+                        toggleTask(id);
+
+                    }
+                );
+
+            });
+
+
+            // =================================
+            // DELETE BUTTONS
+            // =================================
+
+            const deleteButtons =
+                document.querySelectorAll(
+                    ".delete-button"
+                );
+
+
+            deleteButtons.forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const taskElement =
+                            button.closest(".task");
+
+
+                        const id =
+                            Number(
+                                taskElement.dataset.id
+                            );
+
+
+                        deleteTask(id);
+
+                    }
+                );
+
+            });
+
+
+            // Update progress
+
+            updateProgress();
+
+        }
+
+
+        // =====================================
+        // ADD TASK
+        // =====================================
+
+        function addTask() {
+
+
+            const text =
+                taskInput.value.trim();
+
+
+            // Don't add empty task
+
+            if (text === "") {
+
+                alert(
+                    "Please enter a task."
+                );
+
+                return;
+
+            }
+
+
+            const newTask = {
+
+                id:
+                    Date.now(),
+
+                text:
+                    text,
+
+                completed:
+                    false
+
+            };
+
+
+            tasks.push(newTask);
+
+
+            taskInput.value = "";
+
+
+            displayTasks();
+
+        }
+
+
+        // =====================================
+        // TOGGLE TASK
+        // =====================================
+
+        function toggleTask(id) {
+
+
+            tasks =
+                tasks.map(task => {
+
+                    if (task.id === id) {
+
+                        return {
+
+                            ...task,
+
+                            completed:
+                                !task.completed
+
+                        };
+
+                    }
+
+
+                    return task;
+
+                });
+
+
+            displayTasks();
+
+        }
+
+
+        // =====================================
+        // DELETE TASK
+        // =====================================
+
+        function deleteTask(id) {
+
+
+            tasks =
+                tasks.filter(task =>
+                    task.id !== id
+                );
+
+
+            displayTasks();
+
+        }
+
+
+        // =====================================
+        // UPDATE PROGRESS
+        // =====================================
+
+        function updateProgress() {
+
+
+            if (tasks.length === 0) {
+
+                progressBar.style.width =
+                    "0%";
+
+                progressText.textContent =
+                    "0%";
+
+                return;
+
+            }
+
+
+            const completedTasks =
+                tasks.filter(
+                    task => task.completed
+                ).length;
+
+
+            const percentage =
+                Math.round(
+                    (completedTasks /
+                    tasks.length) * 100
+                );
+
+
+            progressBar.style.width =
+                `${percentage}%`;
+
+
+            progressText.textContent =
+                `${percentage}%`;
+
+        }
+
+
+        // =====================================
+        // ADD BUTTON EVENT
+        // =====================================
+
+        addButton.addEventListener(
+            "click",
+            addTask
+        );
+
+
+        // =====================================
+        // ENTER KEY
+        // =====================================
+
+        taskInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    addTask();
+
+                }
+
+            }
+        );
+
+
+        // =====================================
+        // FILTER EVENTS
+        // =====================================
+
+        filters.forEach(filter => {
+
+            filter.addEventListener(
+                "click",
+                () => {
+
+
+                    // Remove active
+                    // from all filters
+
+                    filters.forEach(button => {
+
+                        button.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                    // Add active
+                    // to clicked filter
+
+                    filter.classList.add(
+                        "active"
+                    );
+
+
+                    currentFilter =
+                        filter.dataset.filter;
+
+
+                    displayTasks();
+
+                }
+            );
+
+        });
+
+
+        // =====================================
+        // INITIAL DISPLAY
+        // =====================================
+
+        displayTasks();
+
+
+    </script>
+
+</body>
+
+</html>
