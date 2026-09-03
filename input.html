@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Events - Kanban Drag & Drop Board</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --border: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .add-btn {
+      background-color: var(--accent);
+      color: #0284c7;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .add-btn:hover {
+      opacity: 0.9;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    .column {
+      background-color: var(--surface);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 2px transparent dashed;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .column.drag-over {
+      border-color: var(--accent);
+      background-color: var(--surface-hover);
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .column-title {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 150px;
+      flex-grow: 1;
+    }
+
+    .card {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .card.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+
+    .card-text {
+      outline: none;
+      width: 100%;
+    }
+
+    .card-text[contenteditable="true"] {
+      background-color: var(--surface);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0 0.25rem;
+    }
+
+    .delete-btn:hover {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Kanban Task Board</h1>
+    <button class="add-btn" id="addTaskBtn">+ Add Task</button>
+  </header>
+
+  <main class="board">
+    <!-- To Do Column -->
+    <div class="column" data-status="todo">
+      <div class="column-header">
+        <span class="column-title">To Do</span>
+      </div>
+      <div class="task-list">
+        <div class="card" draggable="true" id="card-1">
+          <span class="card-text">Design database schema</span>
+          <button class="delete-btn">&times;</button>
+        </div>
+        <div class="card" draggable="true" id="card-2">
+          <span class="card-text">Double-click me to edit</span>
+          <button class="delete-btn">&times;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progress Column -->
+    <div class="column" data-status="in-progress">
+      <div class="column-header">
+        <span class="column-title">In Progress</span>
+      </div>
+      <div class="task-list">
+        <div class="card" draggable="true" id="card-3">
+          <span class="card-text">Setup event listeners</span>
+          <button class="delete-btn">&times;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Done Column -->
+    <div class="column" data-status="done">
+      <div class="column-header">
+        <span class="column-title">Done</span>
+      </div>
+      <div class="task-list"></div>
+    </div>
+  </main>
+
+  <script>
+    // State to hold currently dragged item
+    let draggedCard = null;
+
+    // DOM Elements
+    const cards = document.querySelectorAll('.card');
+    const columns = document.querySelectorAll('.column');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const todoTaskList = document.querySelector('.column[data-status="todo"] .task-list');
+
+    // 1. ATTACH CARD EVENTS
+    function attachCardEvents(card) {
+      // Event 1: dragstart
+      card.addEventListener('dragstart', (e) => {
+        draggedCard = card;
+        // Add visual style for dragging state asynchronously so ghost image is retained
+        setTimeout(() => card.classList.add('dragging'), 0);
+      });
+
+      // Event 2: dragend
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        draggedCard = null;
+      });
+
+      // Event 3: dblclick for inline text editing
+      const cardText = card.querySelector('.card-text');
+      cardText.addEventListener('dblclick', () => {
+        cardText.contentEditable = 'true';
+        cardText.focus();
+      });
+
+      // Event 4: blur / keydown to save edited text
+      cardText.addEventListener('blur', () => {
+        cardText.contentEditable = 'false';
+      });
+
+      cardText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          cardText.blur();
+        }
+      });
+
+      // Event 5: click via Event Delegation for Delete button
+      const deleteBtn = card.querySelector('.delete-btn');
+      deleteBtn.addEventListener('click', () => {
+        card.remove();
+      });
+    }
+
+    // Initialize existing cards
+    cards.forEach(card => attachCardEvents(card));
+
+    // 2. ATTACH COLUMN DRAG-AND-DROP EVENTS
+    columns.forEach(column => {
+      // Event 6: dragover - Required to allow dropping
+      column.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Prevents default browser handling to enable drop
+        column.classList.add('drag-over');
+      });
+
+      // Event 7: dragleave
+      column.addEventListener('dragleave', () => {
+        column.classList.remove('drag-over');
+      });
+
+      // Event 8: drop
+      column.addEventListener('drop', () => {
+        column.classList.remove('drag-over');
+        if (draggedCard) {
+          const taskList = column.querySelector('.task-list');
+          taskList.appendChild(draggedCard);
+        }
+      });
+    });
+
+    // 3. CREATE NEW TASKS
+    // Event 9: click event on global button
+    addTaskBtn.addEventListener('click', () => {
+      const taskTitle = prompt('Enter task name:');
+      if (!taskTitle || taskTitle.trim() === '') return;
+
+      const newCard = document.createElement('div');
+      newCard.className = 'card';
+      newCard.draggable = true;
+      newCard.id = `card-${Date.now()}`;
+      newCard.innerHTML = `
+        <span class="card-text">${taskTitle}</span>
+        <button class="delete-btn">&times;</button>
+      `;
+
+      attachCardEvents(newCard);
+      todoTaskList.appendChild(newCard);
+    });
+  </script>
+</body>
+</html>
