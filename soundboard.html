@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Events & Web Audio - Synthesizer Soundboard</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #131b2e;
+      --border: #232f48;
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --accent: #06b6d4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 1.5rem;
+      user-select: none;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      letter-spacing: -0.025em;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Canvas Visualizer */
+    .visualizer-container {
+      width: 100%;
+      max-width: 640px;
+      height: 160px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Pads Grid */
+    .pad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .pad {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.05s, border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+    }
+
+    .pad:hover {
+      border-color: var(--accent);
+    }
+
+    .pad.active {
+      transform: scale(0.95);
+      background-color: var(--pad-color, var(--accent));
+      border-color: #fff;
+      box-shadow: 0 0 20px var(--pad-color, var(--accent));
+    }
+
+    .key-label {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .note-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pad.active .key-label,
+    .pad.active .note-label {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Web Audio Synthesizer</h1>
+    <p>Press matching keyboard keys or click the pads to trigger sounds</p>
+  </header>
+
+  <!-- Audio Visualizer Canvas -->
+  <div class="visualizer-container">
+    <canvas id="visualizerCanvas"></canvas>
+  </div>
+
+  <!-- Soundboard Grid -->
+  <div class="pad-grid" id="padGrid">
+    <div class="pad" data-key="a" data-freq="261.63" data-color="#38bdf8">
+      <span class="key-label">A</span>
+      <span class="note-label">C4</span>
+    </div>
+    <div class="pad" data-key="s" data-freq="293.66" data-color="#818cf8">
+      <span class="key-label">S</span>
+      <span class="note-label">D4</span>
+    </div>
+    <div class="pad" data-key="d" data-freq="329.63" data-color="#c084fc">
+      <span class="key-label">D</span>
+      <span class="note-label">E4</span>
+    </div>
+    <div class="pad" data-key="f" data-freq="349.23" data-color="#f472b6">
+      <span class="key-label">F</span>
+      <span class="note-label">F4</span>
+    </div>
+    <div class="pad" data-key="j" data-freq="392.00" data-color="#fb7185">
+      <span class="key-label">J</span>
+      <span class="note-label">G4</span>
+    </div>
+    <div class="pad" data-key="k" data-freq="440.00" data-color="#f97316">
+      <span class="key-label">K</span>
+      <span class="note-label">A4</span>
+    </div>
+    <div class="pad" data-key="l" data-freq="493.88" data-color="#facc15">
+      <span class="key-label">L</span>
+      <span class="note-label">B4</span>
+    </div>
+    <div class="pad" data-key=";" data-freq="523.25" data-color="#4ade80">
+      <span class="key-label">;</span>
+      <span class="note-label">C5</span>
+    </div>
+  </div>
+
+  <script>
+    // 1. WEB AUDIO API & CANVAS INITIALIZATION
+    let audioCtx = null;
+    let analyser = null;
+    let dataArray = null;
+
+    const canvas = document.getElementById('visualizerCanvas');
+    const canvasCtx = canvas.getContext('2d');
+    const padGrid = document.getElementById('padGrid');
+    const pads = document.querySelectorAll('.pad');
+
+    // Map to store active keys to prevent auto-repeat on hold
+    const activeKeys = new Set();
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        
+        analyser.connect(audioCtx.destination);
+        resizeCanvas();
+        drawVisualizer();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // 2. SYNTHESIZE SOUND (OSCILLATOR + GAIN ENVELOPE)
+    function playTone(freq, color) {
+      initAudio();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      // Attack & Exponential Decay Envelope
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.5, audioCtx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+
+      // Route Audio: Oscillator -> Gain -> Analyser -> Speakers
+      osc.connect(gain);
+      gain.connect(analyser);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.85);
+    }
+
+    // 3. TRIGGER PAD ACTION
+    function triggerPad(pad) {
+      if (!pad) return;
+
+      const freq = parseFloat(pad.dataset.freq);
+      const color = pad.dataset.color;
+
+      pad.style.setProperty('--pad-color', color);
+      pad.classList.add('active');
+
+      playTone(freq, color);
+
+      setTimeout(() => {
+        pad.classList.remove('active');
+      }, 150);
+    }
+
+    // 4. CANVAS VISUALIZER LOOP
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(dataArray);
+
+      canvasCtx.fillStyle = '#131b2e';
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / dataArray.length) * 2;
+      let x = 0;
+
+      for (let i = 0; i < dataArray.length; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height;
+
+        // Gradient for visualizer bars
+        const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, 0);
+        gradient.addColorStop(0, '#06b6d4');
+        gradient.addColorStop(1, '#f472b6');
+
+        canvasCtx.fillStyle = gradient;
+        canvasCtx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+
+        x += barWidth;
+      }
+    }
+
+    // 5. EVENT LISTENERS
+
+    // Event 1: 'keydown' - Keyboard triggers
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      
+      if (activeKeys.has(key)) return; // Ignore holding key auto-repeat
+      activeKeys.add(key);
+
+      const pad = document.querySelector(`.pad[data-key="${key}"]`);
+      if (pad) triggerPad(pad);
+    });
+
+    // Event 2: 'keyup' - Clear active key tracker
+    window.addEventListener('keyup', (e) => {
+      activeKeys.delete(e.key.toLowerCase());
+    });
+
+    // Event 3: 'click' - Mouse/Touch triggers via Event Delegation
+    padGrid.addEventListener('click', (e) => {
+      const pad = e.target.closest('.pad');
+      if (pad) triggerPad(pad);
+    });
+
+    // Event 4: 'resize' - Responsive canvas rendering
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+</html>
