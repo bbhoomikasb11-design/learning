@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Events & Async - GitHub Explorer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-hover: #1f6feb;
+      --error: #f85149;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Search Bar Form */
+    .search-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      background-color: var(--accent-hover);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Status Messages */
+    .status-msg {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 1rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .status-msg.active {
+      display: block;
+    }
+
+    .status-msg.error {
+      color: var(--error);
+    }
+
+    /* Profile Section */
+    .profile-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      display: none;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .profile-card.active {
+      display: flex;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+    }
+
+    .profile-info h2 {
+      font-size: 1.35rem;
+      color: white;
+    }
+
+    .profile-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0.25rem 0 0.75rem 0;
+    }
+
+    .stats-group {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .stat {
+      background-color: var(--bg);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Repositories Controls & List */
+    .repos-header {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .repos-header.active {
+      display: flex;
+    }
+
+    select {
+      background-color: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 0.5rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .repo-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .repo-card h3 {
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    .repo-card h3 a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .repo-card h3 a:hover {
+      text-decoration: underline;
+    }
+
+    .repo-meta {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Search Bar -->
+    <div class="search-card">
+      <form class="search-form" id="searchForm">
+        <input 
+          type="text" 
+          id="usernameInput" 
+          placeholder="Enter GitHub username (e.g., octocat)..." 
+          required 
+          autocomplete="off"
+        >
+        <button type="submit" id="submitBtn">Search</button>
+      </form>
+    </div>
+
+    <!-- Status Output (Loading / Errors) -->
+    <div class="status-msg" id="statusMsg"></div>
+
+    <!-- Profile Details -->
+    <div class="profile-card" id="profileCard">
+      <img src="" alt="Avatar" class="avatar" id="avatarImg">
+      <div class="profile-info">
+        <h2 id="nameText">User Name</h2>
+        <p id="bioText">User bio will display here...</p>
+        <div class="stats-group">
+          <span class="stat">Repos: <strong id="repoCount">0</strong></span>
+          <span class="stat">Followers: <strong id="followerCount">0</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repositories Control Bar -->
+    <div class="repos-header" id="reposHeader">
+      <h3>Repositories</h3>
+      <select id="sortSelect">
+        <option value="stars">Sort by Stars</option>
+        <option value="updated">Sort by Recent</option>
+      </select>
+    </div>
+
+    <!-- Repositories Grid -->
+    <div class="repo-grid" id="repoGrid"></div>
+  </div>
+
+  <script>
+    // State management
+    let fetchedRepos = [];
+
+    // DOM Elements
+    const searchForm = document.getElementById('searchForm');
+    const usernameInput = document.getElementById('usernameInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    
+    const profileCard = document.getElementById('profileCard');
+    const avatarImg = document.getElementById('avatarImg');
+    const nameText = document.getElementById('nameText');
+    const bioText = document.getElementById('bioText');
+    const repoCount = document.getElementById('repoCount');
+    const followerCount = document.getElementById('followerCount');
+
+    const reposHeader = document.getElementById('reposHeader');
+    const sortSelect = document.getElementById('sortSelect');
+    const repoGrid = document.getElementById('repoGrid');
+
+    // UI State Helper
+    function setUIState(state, message = '') {
+      statusMsg.className = 'status-msg';
+      
+      if (state === 'loading') {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Fetching...';
+        statusMsg.classList.add('active');
+        statusMsg.textContent = message;
+        profileCard.classList.remove('active');
+        reposHeader.classList.remove('active');
+        repoGrid.innerHTML = '';
+      } else if (state === 'error') {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Search';
+        statusMsg.classList.add('active', 'error');
+        statusMsg.textContent = message;
+        profileCard.classList.remove('active');
+        reposHeader.classList.remove('active');
+        repoGrid.innerHTML = '';
+      } else if (state === 'success') {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Search';
+        statusMsg.classList.remove('active');
+        profileCard.classList.add('active');
+        reposHeader.classList.add('active');
+      }
+    }
+
+    // 1. ASYNC FETCH LOGIC USING PROMISES & ASYNC/AWAIT
+    async function fetchGitHubData(username) {
+      setUIState('loading', `Fetching data for "${username}"...`);
+
+      try {
+        // Parallel requests using Promise.all
+        const [profileRes, reposRes] = await Promise.all([
+          fetch(`https://api.github.com/users/${username}`),
+          fetch(`https://api.github.com/users/${username}/repos?per_page=30`)
+        ]);
+
+        // Handle HTTP 404 & other API errors
+        if (!profileRes.ok) {
+          if (profileRes.status === 404) throw new Error('User not found.');
+          throw new Error('Failed to load user profile.');
+        }
+
+        if (!reposRes.ok) {
+          throw new Error('Failed to load repositories.');
+        }
+
+        // Parse JSON promises
+        const profileData = await profileRes.json();
+        const reposData = await reposRes.json();
+
+        // Render profile details
+        avatarImg.src = profileData.avatar_url;
+        nameText.textContent = profileData.name || profileData.login;
+        bioText.textContent = profileData.bio || 'No bio available.';
+        repoCount.textContent = profileData.public_repos;
+        followerCount.textContent = profileData.followers;
+
+        // Save repos to state & trigger render
+        fetchedRepos = reposData;
+        renderRepositories();
+
+        setUIState('success');
+
+      } catch (err) {
+        setUIState('error', err.message || 'An unexpected error occurred.');
+      }
+    }
+
+    // 2. RENDER & SORT REPOSITORIES
+    function renderRepositories() {
+      const sortBy = sortSelect.value;
+
+      // Sort repos array based on selected strategy
+      const sorted = [...fetchedRepos].sort((a, b) => {
+        if (sortBy === 'stars') {
+          return b.stargazers_count - a.stargazers_count;
+        } else if (sortBy === 'updated') {
+          return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+      });
+
+      repoGrid.innerHTML = '';
+
+      if (sorted.length === 0) {
+        repoGrid.innerHTML = '<p style="color: var(--text-muted)">No public repositories found.</p>';
+        return;
+      }
+
+      sorted.forEach(repo => {
+        const card = document.createElement('div');
+        card.className = 'repo-card';
+        card.innerHTML = `
+          <h3><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></h3>
+          <div class="repo-meta">
+            <span>★ ${repo.stargazers_count}</span>
+            <span>${repo.language || 'Plain Text'}</span>
+          </div>
+        `;
+        repoGrid.appendChild(card);
+      });
+    }
+
+    // 3. EVENT LISTENERS
+
+    // Event 1: 'submit' on Form (Async pipeline entry point)
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = usernameInput.value.trim();
+      if (username) {
+        fetchGitHubData(username);
+      }
+    });
+
+    // Event 2: 'change' on Select dropdown (Triggers client-side sort)
+    sortSelect.addEventListener('change', () => {
+      renderRepositories();
+    });
+
+    // Event 3: 'input' event to clear errors when the user starts typing again
+    usernameInput.addEventListener('input', () => {
+      if (statusMsg.classList.contains('error')) {
+        statusMsg.classList.remove('active', 'error');
+      }
+    });
+  </script>
+</body>
+</html>
