@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Events - AI Emotion & Persona Detector</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #131b2e;
+      --surface-card: #1c2842;
+      --border: #232f48;
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      color: var(--text);
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Main Container */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 850px;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Camera / Scan Feed Panel */
+    .viewport-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background-color: #000;
+      border-radius: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--border);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Bounding Box & HUD Elements */
+    .face-box {
+      position: absolute;
+      border: 2px dashed var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+      border-radius: 0.375rem;
+      display: none;
+      transition: all 0.2s ease-out;
+      pointer-events: none;
+    }
+
+    .face-box.active {
+      display: block;
+    }
+
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+      display: none;
+    }
+
+    .scan-line.scanning {
+      display: block;
+      animation: scan 1.5s infinite linear;
+    }
+
+    @keyframes scan {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+
+    .controls-group {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    button {
+      flex: 1;
+      background-color: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button.btn-secondary {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* Analysis & Persona Output Panel */
+    .insights-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .metric-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--accent);
+      transition: width 0.4s ease-out, background-color 0.3s;
+    }
+
+    .persona-box {
+      background-color: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .persona-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .persona-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FaceFirst AI Emotion & Persona Detector</h1>
+    <p>Simulating real-time emotion classification via Canvas rendering, mouse tracking, and AI insights</p>
+  </header>
+
+  <main class="dashboard">
+    <!-- Left Panel: Viewport -->
+    <div class="viewport-card">
+      <div class="canvas-wrapper" id="canvasContainer">
+        <canvas id="viewCanvas"></canvas>
+        <div class="scan-line" id="scanLine"></div>
+        <div class="face-box" id="faceBox"></div>
+      </div>
+
+      <div class="controls-group">
+        <button id="scanBtn">Scan Target</button>
+        <button class="btn-secondary" id="modeBtn">Switch Emotion</button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Insights -->
+    <div class="insights-card">
+      <h3>Detected Metrics</h3>
+
+      <div class="metric-group">
+        <div class="metric-header">
+          <span>Primary Emotion</span>
+          <strong id="emotionLabel">Idle</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="confidenceBar"></div>
+        </div>
+      </div>
+
+      <div class="persona-box">
+        <span class="persona-title" id="personaTitle">Awaiting Input</span>
+        <p class="persona-desc" id="personaDesc">Click "Scan Target" or move your mouse inside the viewport box to trigger emotion classification and generate dynamic insights.</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Emotion Presets
+    const EMOTIONS = [
+      {
+        name: 'Focused / Analytical',
+        color: '#38bdf8',
+        box: { top: '25%', left: '30%', width: '40%', height: '50%' },
+        confidence: 94,
+        persona: 'The System Architect',
+        insight: 'High cognitive engagement detected. Perfect state for deep work, debugging algorithms, and structural system design.'
+      },
+      {
+        name: 'Creative / Enthusiastic',
+        color: '#f472b6',
+        box: { top: '20%', left: '25%', width: '50%', height: '55%' },
+        confidence: 88,
+        persona: 'The UX Visionary',
+        insight: 'Elevated expression and openness. Ideal state for rapid UI prototyping, brainstorm sessions, and visual storytelling.'
+      },
+      {
+        name: 'Calm / Mindful',
+        color: '#4ade80',
+        box: { top: '30%', left: '32%', width: '36%', height: '45%' },
+        confidence: 91,
+        persona: 'The Balanced Practitioner',
+        insight: 'Steady breathing and relaxed state. Optimal condition for long-term strategic decisions and clear analytical reasoning.'
+      }
+    ];
+
+    let currentEmotionIdx = 0;
+    let isScanning = false;
+
+    // DOM Elements
+    const canvas = document.getElementById('viewCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvasContainer');
+    const scanLine = document.getElementById('scanLine');
+    const faceBox = document.getElementById('faceBox');
+    const scanBtn = document.getElementById('scanBtn');
+    const modeBtn = document.getElementById('modeBtn');
+
+    const emotionLabel = document.getElementById('emotionLabel');
+    const confidenceBar = document.getElementById('confidenceBar');
+    const personaTitle = document.getElementById('personaTitle');
+    const personaDesc = document.getElementById('personaDesc');
+
+    // 1. CANVAS GRID DRAWING
+    function drawBackgroundGrid() {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+
+      ctx.fillStyle = '#0a0f1d';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+
+      const gridSize = 20;
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    // 2. EMOTION CLASSIFICATION WORKFLOW
+    function runScan() {
+      if (isScanning) return;
+      isScanning = true;
+
+      // Start visual effects
+      scanLine.classList.add('scanning');
+      faceBox.classList.remove('active');
+      emotionLabel.textContent = 'Analyzing...';
+      confidenceBar.style.width = '0%';
+
+      setTimeout(() => {
+        isScanning = false;
+        scanLine.classList.remove('scanning');
+
+        const activeEmotion = EMOTIONS[currentEmotionIdx];
+
+        // Position Face Bounding Box
+        faceBox.style.top = activeEmotion.box.top;
+        faceBox.style.left = activeEmotion.box.left;
+        faceBox.style.width = activeEmotion.box.width;
+        faceBox.style.height = activeEmotion.box.height;
+        faceBox.style.borderColor = activeEmotion.color;
+        faceBox.classList.add('active');
+
+        // Render Insight Cards
+        emotionLabel.textContent = activeEmotion.name;
+        emotionLabel.style.color = activeEmotion.color;
+        confidenceBar.style.width = `${activeEmotion.confidence}%`;
+        confidenceBar.style.backgroundColor = activeEmotion.color;
+
+        personaTitle.textContent = activeEmotion.persona;
+        personaTitle.style.color = activeEmotion.color;
+        personaDesc.textContent = activeEmotion.insight;
+      }, 1200);
+    }
+
+    // 3. EVENT LISTENERS
+
+    // Event 1: 'click' to run AI analysis scan
+    scanBtn.addEventListener('click', runScan);
+
+    // Event 2: 'click' to cycle through emotion modes
+    modeBtn.addEventListener('click', () => {
+      currentEmotionIdx = (currentEmotionIdx + 1) % EMOTIONS.length;
+      runScan();
+    });
+
+    // Event 3: 'mousemove' - Tracking cursor inside canvas to simulate face tracking
+    container.addEventListener('mousemove', (e) => {
+      if (isScanning || !faceBox.classList.contains('active')) return;
+
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Micro movement offsets for bounding box
+      const offsetX = (x - rect.width / 2) * 0.05;
+      const offsetY = (y - rect.height / 2) * 0.05;
+
+      faceBox.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    });
+
+    // Event 4: 'mouseleave' - Reset bounding box offsets
+    container.addEventListener('mouseleave', () => {
+      faceBox.style.transform = 'translate(0px, 0px)';
+    });
+
+    // Event 5: 'resize' - Responsive canvas grid redraw
+    window.addEventListener('resize', drawBackgroundGrid);
+
+    // Initial load setup
+    drawBackgroundGrid();
+  </script>
+</body>
+</html>
