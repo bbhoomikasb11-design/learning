@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spatial Particle Universe & Audio Synthesizer</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --surface: #0f172a;
+      --border: #1e293b;
+      --accent-cyan: #38bdf8;
+      --accent-purple: #c084fc;
+      --accent-emerald: #34d399;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem;
+      gap: 1.25rem;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* 3D Viewport */
+    .universe-viewport {
+      width: 100%;
+      max-width: 850px;
+      height: 400px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Controls Bar */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 850px;
+    }
+
+    .control-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    label {
+      font-size: 0.75rem;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    button {
+      flex: 1;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    button.active {
+      background-color: var(--accent-cyan);
+      color: var(--bg);
+      border-color: var(--accent-cyan);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Spatial Particle Universe & Audio Synthesizer</h1>
+    <p>Move, drag, or click inside the 3D space to trigger gravity wells and harmonic chords</p>
+  </header>
+
+  <div class="universe-viewport" id="viewport">
+    <canvas id="universeCanvas"></canvas>
+  </div>
+
+  <div class="controls-grid">
+    <!-- Mode Selector -->
+    <div class="control-card">
+      <span class="card-title">Interactions & Physics</span>
+      <div class="btn-group" id="modeGroup">
+        <button class="active" data-mode="gravity">Gravity Well</button>
+        <button data-mode="repulsion">Repulsion</button>
+        <button data-mode="orbit">Orbit Burst</button>
+      </div>
+    </div>
+
+    <!-- Audio Harmonic Scale -->
+    <div class="control-card">
+      <span class="card-title">Chord Scale</span>
+      <div class="btn-group" id="scaleGroup">
+        <button class="active" data-scale="pentatonic">Pentatonic</button>
+        <button data-scale="minor">Minor</button>
+        <button data-scale="major">Major</button>
+      </div>
+    </div>
+
+    <!-- Starfield Speed Control -->
+    <div class="control-card">
+      <span class="card-title">Warp Speed</span>
+      <div class="control-group">
+        <label>Star Velocity <span id="speedVal">1.5x</span></label>
+        <input type="range" id="speedSlider" min="0.5" max="5" step="0.1" value="1.5">
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">Click or drag inside the viewport to alter 3D perspective depth ($z$-index) and audio resonance</p>
+
+  <script>
+    // Musical Scale Frequencies (Hz)
+    const SCALES = {
+      pentatonic: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25],
+      minor: [220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00],
+      major: [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+    };
+
+    let activeScale = 'pentatonic';
+    let interactionMode = 'gravity';
+
+    // Canvas Setup
+    const canvas = document.getElementById('universeCanvas');
+    const ctx = canvas.getContext('2d');
+    const viewport = document.getElementById('viewport');
+
+    let particles = [];
+    let mouse = { x: 0, y: 0, isPressed: false };
+    let audioCtx = null;
+
+    function resizeCanvas() {
+      canvas.width = viewport.clientWidth;
+      canvas.height = viewport.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 1. 3D PARTICLE CLASS (X, Y, Z Coordinates)
+    class Star3D {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = (Math.random() - 0.5) * canvas.width * 2;
+        this.y = (Math.random() - 0.5) * canvas.height * 2;
+        this.z = Math.random() * canvas.width;
+        this.color = ['#38bdf8', '#c084fc', '#34d399', '#f8fafc'][Math.floor(Math.random() * 4)];
+      }
+
+      update(speed) {
+        this.z -= speed * 2;
+
+        // Reset particle when it travels past focal length plane
+        if (this.z <= 0) this.reset();
+
+        // Mouse Gravitational Influence
+        if (mouse.isPressed) {
+          const screenX = (this.x / this.z) * 300 + canvas.width / 2;
+          const screenY = (this.y / this.z) * 300 + canvas.height / 2;
+          const dx = mouse.x - screenX;
+          const dy = mouse.y - screenY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 180) {
+            const force = (180 - dist) / 180;
+            if (interactionMode === 'gravity') {
+              this.x += dx * force * 0.05;
+              this.y += dy * force * 0.05;
+            } else if (interactionMode === 'repulsion') {
+              this.x -= dx * force * 0.05;
+              this.y -= dy * force * 0.05;
+            } else if (interactionMode === 'orbit') {
+              this.x += -dy * force * 0.08;
+              this.y += dx * force * 0.08;
+            }
+          }
+        }
+      }
+
+      draw() {
+        // Perspective projection formula: (coord / z) * focalLength
+        const k = 300 / this.z;
+        const px = this.x * k + canvas.width / 2;
+        const py = this.y * k + canvas.height / 2;
+
+        if (px < 0 || px >= canvas.width || py < 0 || py >= canvas.height) return;
+
+        const size = Math.max(0.5, (1 - this.z / canvas.width) * 4);
+        const alpha = Math.max(0.1, 1 - this.z / canvas.width);
+
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(px, py, size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    // Populate 3D Starfield
+    for (let i = 0; i < 350; i++) {
+      particles.push(new Star3D());
+    }
+
+    // 2. POLYPHONIC AUDIO SYNTHESIS
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playChordNote(screenX) {
+      initAudio();
+
+      const scaleArray = SCALES[activeScale];
+      const index = Math.floor((screenX / canvas.width) * scaleArray.length);
+      const freq = scaleArray[Math.min(index, scaleArray.length - 1)];
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.65);
+    }
+
+    // 3. RENDER LOOP
+    function render() {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.3)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const speed = parseFloat(document.getElementById('speedSlider').value);
+
+      particles.forEach(p => {
+        p.update(speed);
+        p.draw();
+      });
+
+      requestAnimationFrame(render);
+    }
+    render();
+
+    // 4. EVENT LISTENERS
+
+    // Event 1 & 2: 'mousedown' & 'mousemove' - Mouse interactions inside canvas
+    canvas.addEventListener('mousedown', (e) => {
+      mouse.isPressed = true;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+
+      playChordNote(mouse.x);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    });
+
+    // Event 3: 'mouseup' & 'mouseleave'
+    window.addEventListener('mouseup', () => { mouse.isPressed = false; });
+    canvas.addEventListener('mouseleave', () => { mouse.isPressed = false; });
+
+    // Event 4: 'click' via Event Delegation on Controls
+    document.getElementById('modeGroup').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      document.querySelectorAll('#modeGroup button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      interactionMode = btn.dataset.mode;
+    });
+
+    document.getElementById('scaleGroup').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      document.querySelectorAll('#scaleGroup button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeScale = btn.dataset.scale;
+    });
+
+    // Event 5: 'input' on slider
+    document.getElementById('speedSlider').addEventListener('input', (e) => {
+      document.getElementById('speedVal').textContent = `${e.target.value}x`;
+    });
+  </script>
+</body>
+</html>
