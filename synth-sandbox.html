@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA Synthesizer & Waveform Sandbox</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --surface: #0f172a;
+      --border: #1e293b;
+      --accent-cyan: #06b6d4;
+      --accent-magenta: #ec4899;
+      --accent-amber: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      gap: 1.5rem;
+      user-select: none;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Sandbox Canvas */
+    .viewport-card {
+      width: 100%;
+      max-width: 800px;
+      height: 320px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Controls Console */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .control-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    label {
+      font-size: 0.75rem;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    button {
+      flex: 1;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    button.active {
+      background-color: var(--accent-cyan);
+      color: var(--bg);
+      border-color: var(--accent-cyan);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Audio-Visual Waveform Sandbox</h1>
+    <p>Move mouse inside viewport to alter synth pitch & particle ripples</p>
+  </header>
+
+  <div class="viewport-card" id="canvasContainer">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="controls-grid">
+    <!-- Waveform Selectors -->
+    <div class="control-card">
+      <span class="card-title">Oscillator Type</span>
+      <div class="btn-group" id="waveTypeGroup">
+        <button class="active" data-type="sine">Sine</button>
+        <button data-type="sawtooth">Saw</button>
+        <button data-type="square">Square</button>
+        <button data-type="triangle">Tri</button>
+      </div>
+    </div>
+
+    <!-- Modulation Sliders -->
+    <div class="control-card">
+      <span class="card-title">Audio Modulation</span>
+      <div class="control-group">
+        <label>Filter Cutoff <span id="cutoffVal">1200 Hz</span></label>
+        <input type="range" id="cutoffSlider" min="200" max="5000" value="1200">
+      </div>
+      <div class="control-group">
+        <label>Delay Feedback <span id="feedbackVal">0.3</span></label>
+        <input type="range" id="feedbackSlider" min="0" max="0.8" step="0.05" value="0.3">
+      </div>
+    </div>
+
+    <!-- Visual Tuning -->
+    <div class="control-card">
+      <span class="card-title">Visual Dynamics</span>
+      <div class="control-group">
+        <label>Particle Density <span id="densityVal">40</span></label>
+        <input type="range" id="densitySlider" min="10" max="100" value="40">
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">Click or drag inside the dark canvas box to trigger synthesizer notes</p>
+
+  <script>
+    // Audio Context State
+    let audioCtx = null;
+    let mainOsc = null;
+    let mainGain = null;
+    let filterNode = null;
+    let waveType = 'sine';
+    let isPlaying = false;
+
+    // Canvas Setup
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvasContainer');
+
+    let particles = [];
+    let rippleRadius = 0;
+    let ripplePos = { x: 0, y: 0 };
+
+    function resizeCanvas() {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 1. WEB AUDIO API INITIALIZATION
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.value = parseFloat(document.getElementById('cutoffSlider').value);
+
+        mainGain = audioCtx.createGain();
+        mainGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+        filterNode.connect(mainGain);
+        mainGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function startNote(freq) {
+      initAudio();
+      if (mainOsc) mainOsc.stop();
+
+      mainOsc = audioCtx.createOscillator();
+      mainOsc.type = waveType;
+      mainOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      mainOsc.connect(filterNode);
+      mainOsc.start();
+
+      mainGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      mainGain.gain.setValueAtTime(mainGain.gain.value, audioCtx.currentTime);
+      mainGain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+      isPlaying = true;
+    }
+
+    function updateNoteFrequency(freq) {
+      if (mainOsc && isPlaying) {
+        mainOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.03);
+      }
+    }
+
+    function stopNote() {
+      if (mainGain && isPlaying) {
+        mainGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        mainGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        isPlaying = false;
+      }
+    }
+
+    // 2. CANVAS PARTICLE PHYSICS
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = (Math.random() - 0.5) * 4;
+        this.life = 1.0;
+        this.color = Math.random() > 0.5 ? '#06b6d4' : '#ec4899';
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= 0.02;
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    function renderLoop() {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Render expanding shockwave ripple
+      if (rippleRadius > 0) {
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(ripplePos.x, ripplePos.y, rippleRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        rippleRadius += 4;
+        if (rippleRadius > 150) rippleRadius = 0;
+      }
+
+      // Render Particles
+      particles.forEach((p, idx) => {
+        p.update();
+        p.draw();
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+
+      requestAnimationFrame(renderLoop);
+    }
+    renderLoop();
+
+    // 3. EVENT LISTENERS
+
+    // Event 1 & 2: 'mousedown' & 'mousemove' - Interacting inside canvas viewport
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Map X-coordinate to Pitch Frequency (150Hz to 1200Hz)
+      const freq = 150 + (x / canvas.width) * 1050;
+      startNote(freq);
+
+      ripplePos = { x, y };
+      rippleRadius = 1;
+
+      // Spawn burst particles
+      const count = parseInt(document.getElementById('densitySlider').value);
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y));
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isPlaying) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+
+      const freq = 150 + (x / canvas.width) * 1050;
+      updateNoteFrequency(freq);
+    });
+
+    // Event 3: 'mouseup' & 'mouseleave' - Stopping synth notes
+    canvas.addEventListener('mouseup', stopNote);
+    canvas.addEventListener('mouseleave', stopNote);
+
+    // Event 4: 'click' via Event Delegation on Oscillator selector
+    document.getElementById('waveTypeGroup').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      document.querySelectorAll('#waveTypeGroup button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      waveType = btn.dataset.type;
+    });
+
+    // Event 5: 'input' for modulation parameters
+    document.getElementById('cutoffSlider').addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('cutoffVal').textContent = `${val} Hz`;
+      if (filterNode) filterNode.frequency.setValueAtTime(val, audioCtx.currentTime);
+    });
+
+    document.getElementById('densitySlider').addEventListener('input', (e) => {
+      document.getElementById('densityVal').textContent = e.target.value;
+    });
+  </script>
+</body>
+</html>
